@@ -1,0 +1,343 @@
+Arsenal|Arsène Wenger|1996-10-01|2018-05-13|0
+Arsenal|Unai Emery|2018-05-23|2019-11-29|0
+Arsenal|Freddie Ljungberg|2019-11-29|2019-12-21|1
+Arsenal|Mikel Arteta|2019-12-22|9999-12-31|0
+Aston Villa|Martin O'Neill|2006-08-05|2010-08-09|0
+Aston Villa|Kevin MacDonald|2010-08-09|2010-09-08|1
+Aston Villa|Gérard Houllier|2010-09-08|2011-06-01|0
+Aston Villa|Gary McAllister|2011-04-23|2011-05-22|1
+Aston Villa|Alex McLeish|2011-06-17|2012-05-14|0
+Aston Villa|Paul Lambert|2012-06-02|2015-02-11|0
+Aston Villa|Scott Marshall|2015-02-11|2015-02-14|1
+Aston Villa|Tim Sherwood|2015-02-14|2015-10-25|0
+Aston Villa|Kevin MacDonald|2015-10-25|2015-11-02|1
+Aston Villa|Rémi Garde|2015-11-02|2016-03-29|0
+Aston Villa|Eric Black|2016-03-30|2016-06-02|1
+Aston Villa|Dean Smith|2018-10-10|2021-11-07|0
+Aston Villa|Steven Gerrard|2021-11-11|2022-10-20|0
+Aston Villa|Aaron Danks|2022-10-21|2022-10-31|1
+Aston Villa|Unai Emery|2022-10-24|9999-12-31|0
+Birmingham City|Steve Bruce|2001-12-12|2007-11-23|0
+Birmingham City|Eric Black|2007-11-23|2007-11-27|1
+Birmingham City|Alex McLeish|2007-11-28|2011-06-12|0
+Blackburn Rovers|Mark Hughes|2004-09-15|2008-06-03|0
+Blackburn Rovers|Paul Ince|2008-06-22|2008-12-16|0
+Blackburn Rovers|Sam Allardyce|2008-12-17|2010-12-13|0
+Blackburn Rovers|Steve Kean|2010-12-13|2012-09-28|0
+Blackpool|Ian Holloway|2009-05-21|2012-11-03|0
+Bolton Wanderers|Sam Allardyce|1999-10-19|2007-04-29|0
+Bolton Wanderers|Sammy Lee|2007-04-30|2007-10-07|0
+Bolton Wanderers|Archie Knox|2007-10-17|2007-10-25|1
+Bolton Wanderers|Gary Megson|2007-10-25|2009-12-30|0
+Bolton Wanderers|Owen Coyle|2010-01-08|2012-10-09|0
+AFC Bournemouth|Eddie Howe|2012-10-12|2020-08-01|0
+AFC Bournemouth|Scott Parker|2021-06-28|2022-08-30|0
+AFC Bournemouth|Gary O'Neil|2022-08-30|2023-06-19|0
+AFC Bournemouth|Andoni Iraola|2023-06-19|2026-05-24|0
+AFC Bournemouth|Marco Rose|2026-06-01|9999-12-31|0
+Brentford|Thomas Frank|2018-10-16|2025-06-12|0
+Brentford|Keith Andrews|2025-06-27|9999-12-31|0
+Brighton & Hove Albion|Chris Hughton|2014-12-31|2019-05-13|0
+Brighton & Hove Albion|Graham Potter|2019-05-20|2022-09-08|0
+Brighton & Hove Albion|Roberto De Zerbi|2022-09-18|2024-05-19|0
+Brighton & Hove Albion|Fabian Hürzeler|2024-07-02|9999-12-31|0
+Burnley|Owen Coyle|2007-11-27|2010-01-05|0
+Burnley|Brian Laws|2010-01-13|2010-12-29|0
+Burnley|Sean Dyche|2012-10-30|2022-04-15|0
+Burnley|Mike Jackson|2022-04-15|2022-05-22|1
+Burnley|Vincent Kompany|2022-06-14|2024-05-29|0
+Burnley|Scott Parker|2024-07-05|2026-04-30|0
+Burnley|Mike Jackson|2026-04-30|2026-05-24|1
+Cardiff City|Malky Mackay|2011-06-17|2013-12-27|0
+Cardiff City|David Kerslake|2013-12-27|2014-01-02|1
+Cardiff City|Ole Gunnar Solskjær|2014-01-02|2014-09-18|0
+Cardiff City|Neil Warnock|2016-10-05|2019-11-11|0
+Chelsea|José Mourinho|2004-06-02|2007-09-20|0
+Chelsea|Avram Grant|2007-09-20|2008-05-24|0
+Chelsea|Luiz Felipe Scolari|2008-07-01|2009-02-09|0
+Chelsea|Ray Wilkins|2009-02-09|2009-02-16|1
+Chelsea|Guus Hiddink|2009-02-16|2009-05-31|1
+Chelsea|Carlo Ancelotti|2009-07-01|2011-05-22|0
+Chelsea|André Villas-Boas|2011-06-22|2012-03-04|0
+Chelsea|Roberto Di Matteo|2012-03-04|2012-11-21|0
+Chelsea|Rafael Benítez|2012-11-21|2013-05-27|1
+Chelsea|José Mourinho|2013-06-03|2015-12-17|0
+Chelsea|Steve Holland|2015-12-17|2015-12-19|1
+Chelsea|Guus Hiddink|2015-12-19|2016-05-15|1
+Chelsea|Antonio Conte|2016-07-03|2018-07-13|0
+Chelsea|Maurizio Sarri|2018-07-14|2019-06-16|0
+Chelsea|Frank Lampard|2019-07-04|2021-01-25|0
+Chelsea|Thomas Tuchel|2021-01-26|2022-09-07|0
+Chelsea|Graham Potter|2022-09-08|2023-04-02|0
+Chelsea|Bruno Saltor|2023-04-02|2023-04-06|1
+Chelsea|Frank Lampard|2023-04-06|2023-05-28|1
+Chelsea|Mauricio Pochettino|2023-07-01|2024-05-21|0
+Chelsea|Enzo Maresca|2024-07-01|2026-01-01|0
+Chelsea|Calum McFarlane|2026-01-01|2026-01-08|1
+Chelsea|Liam Rosenior|2026-01-08|2026-04-22|0
+Chelsea|Calum McFarlane|2026-04-22|2026-06-01|1
+Chelsea|Xabi Alonso|2026-07-01|9999-12-31|0
+Coventry City|Frank Lampard|2024-11-28|9999-12-31|0
+Crystal Palace|Ian Holloway|2012-11-03|2013-10-23|0
+Crystal Palace|Keith Millen|2013-10-23|2013-11-23|1
+Crystal Palace|Tony Pulis|2013-11-23|2014-08-14|0
+Crystal Palace|Keith Millen|2014-08-14|2014-08-27|1
+Crystal Palace|Neil Warnock|2014-08-27|2014-12-27|0
+Crystal Palace|Keith Millen|2014-12-27|2015-01-02|1
+Crystal Palace|Alan Pardew|2015-01-02|2016-12-22|0
+Crystal Palace|Sam Allardyce|2016-12-23|2017-05-23|0
+Crystal Palace|Frank de Boer|2017-06-26|2017-09-11|0
+Crystal Palace|Roy Hodgson|2017-09-12|2021-05-24|0
+Crystal Palace|Patrick Vieira|2021-07-04|2023-03-17|0
+Crystal Palace|Paddy McCarthy|2023-03-17|2023-03-21|1
+Crystal Palace|Roy Hodgson|2023-03-21|2024-02-19|0
+Crystal Palace|Paddy McCarthy|2024-02-19|2024-02-19|1
+Crystal Palace|Oliver Glasner|2024-02-19|2026-05-27|0
+Crystal Palace|Pierre Sage|2026-06-15|9999-12-31|0
+Derby County|Billy Davies|2006-06-02|2007-11-26|0
+Derby County|Paul Jewell|2007-11-28|2008-12-29|0
+Everton|David Moyes|2002-03-15|2013-06-01|0
+Everton|Roberto Martínez|2013-06-05|2016-05-12|0
+Everton|David Unsworth|2016-05-12|2016-06-14|1
+Everton|Ronald Koeman|2016-06-14|2017-10-23|0
+Everton|David Unsworth|2017-10-23|2017-11-30|1
+Everton|Sam Allardyce|2017-11-30|2018-05-16|0
+Everton|Marco Silva|2018-05-31|2019-12-05|0
+Everton|Duncan Ferguson|2019-12-05|2019-12-21|1
+Everton|Carlo Ancelotti|2019-12-22|2021-06-01|0
+Everton|Rafael Benítez|2021-06-30|2022-01-16|0
+Everton|Duncan Ferguson|2022-01-18|2022-01-31|1
+Everton|Frank Lampard|2022-01-31|2023-01-23|0
+Everton|Sean Dyche|2023-01-30|2025-01-09|0
+Everton|Leighton Baines|2025-01-09|2025-01-11|1
+Everton|David Moyes|2025-01-11|9999-12-31|0
+Fulham|Lawrie Sanchez|2007-04-11|2007-12-21|0
+Fulham|Ray Lewington|2007-12-21|2007-12-30|1
+Fulham|Roy Hodgson|2007-12-30|2010-06-30|0
+Fulham|Ray Lewington|2010-07-01|2010-07-29|1
+Fulham|Mark Hughes|2010-07-29|2011-06-01|0
+Fulham|Martin Jol|2011-06-07|2013-12-01|0
+Fulham|René Meulensteen|2013-12-01|2014-02-14|0
+Fulham|Felix Magath|2014-02-14|2014-09-18|0
+Fulham|Slaviša Jokanović|2015-12-27|2018-11-14|0
+Fulham|Claudio Ranieri|2018-11-14|2019-02-28|0
+Fulham|Scott Parker|2019-02-28|2021-06-28|0
+Fulham|Marco Silva|2021-07-01|2026-06-02|0
+Fulham|Álvaro Arbeloa|2026-07-07|9999-12-31|0
+Huddersfield Town|David Wagner|2015-11-09|2019-01-14|0
+Huddersfield Town|Mark Hudson|2019-01-14|2019-01-21|1
+Huddersfield Town|Jan Siewert|2019-01-21|2019-08-16|0
+Hull City|Phil Brown|2006-12-04|2010-03-15|0
+Hull City|Iain Dowie|2010-03-17|2010-05-09|0
+Hull City|Steve Bruce|2012-06-08|2016-07-22|0
+Hull City|Mike Phelan|2016-07-22|2017-01-03|0
+Hull City|Marco Silva|2017-01-05|2017-05-25|0
+Hull City|Sergej Jakirović|2025-06-11|9999-12-31|0
+Ipswich Town|Kieran McKenna|2021-12-16|2026-06-10|0
+Ipswich Town|Gary O'Neil|2026-06-23|9999-12-31|0
+Leeds United|Marcelo Bielsa|2018-06-15|2022-02-27|0
+Leeds United|Jesse Marsch|2022-02-28|2023-02-06|0
+Leeds United|Michael Skubala|2023-02-06|2023-02-21|1
+Leeds United|Javi Gracia|2023-02-21|2023-05-03|0
+Leeds United|Sam Allardyce|2023-05-03|2023-06-02|0
+Leeds United|Daniel Farke|2023-07-04|9999-12-31|0
+Leicester City|Nigel Pearson|2011-11-15|2015-06-30|0
+Leicester City|Claudio Ranieri|2015-07-13|2017-02-23|0
+Leicester City|Craig Shakespeare|2017-02-23|2017-10-17|0
+Leicester City|Michael Appleton|2017-10-17|2017-10-25|1
+Leicester City|Claude Puel|2017-10-25|2019-02-24|0
+Leicester City|Adam Sadler|2019-02-24|2019-02-26|1
+Leicester City|Brendan Rodgers|2019-02-27|2023-04-02|0
+Leicester City|Adam Sadler|2023-04-02|2023-04-10|1
+Leicester City|Dean Smith|2023-04-10|2023-06-16|0
+Leicester City|Steve Cooper|2024-06-20|2024-11-24|0
+Leicester City|Ben Dawson|2024-11-24|2024-12-01|1
+Leicester City|Ruud van Nistelrooy|2024-12-01|2025-06-27|0
+Liverpool|Rafael Benítez|2004-06-16|2010-06-03|0
+Liverpool|Roy Hodgson|2010-07-01|2011-01-08|0
+Liverpool|Kenny Dalglish|2011-01-08|2012-05-16|0
+Liverpool|Brendan Rodgers|2012-06-01|2015-10-04|0
+Liverpool|Jürgen Klopp|2015-10-08|2024-05-19|0
+Liverpool|Arne Slot|2024-06-01|2026-05-30|0
+Liverpool|Andoni Iraola|2026-06-04|9999-12-31|0
+Luton Town|Rob Edwards|2022-11-17|2025-01-09|0
+Manchester City|Sven-Göran Eriksson|2007-07-06|2008-06-02|0
+Manchester City|Mark Hughes|2008-06-04|2009-12-19|0
+Manchester City|Roberto Mancini|2009-12-19|2013-05-13|0
+Manchester City|Brian Kidd|2013-05-13|2013-06-14|1
+Manchester City|Manuel Pellegrini|2013-06-14|2016-06-30|0
+Manchester City|Pep Guardiola|2016-07-01|2026-05-24|0
+Manchester City|Enzo Maresca|2026-06-29|9999-12-31|0
+Manchester United|Alex Ferguson|1986-11-06|2013-06-01|0
+Manchester United|David Moyes|2013-07-01|2014-04-22|0
+Manchester United|Ryan Giggs|2014-04-22|2014-05-11|1
+Manchester United|Louis van Gaal|2014-07-14|2016-05-23|0
+Manchester United|José Mourinho|2016-05-27|2018-12-18|0
+Manchester United|Ole Gunnar Solskjær|2018-12-19|2021-11-21|0
+Manchester United|Michael Carrick|2021-11-21|2021-12-02|1
+Manchester United|Ralf Rangnick|2021-12-03|2022-05-22|1
+Manchester United|Erik ten Hag|2022-06-01|2024-10-28|0
+Manchester United|Ruud van Nistelrooy|2024-10-28|2024-11-11|1
+Manchester United|Ruben Amorim|2024-11-11|2026-01-05|0
+Manchester United|Darren Fletcher|2026-01-05|2026-01-13|1
+Manchester United|Michael Carrick|2026-01-13|9999-12-31|0
+Middlesbrough|Gareth Southgate|2006-06-07|2009-10-20|0
+Middlesbrough|Aitor Karanka|2013-11-13|2017-03-16|0
+Middlesbrough|Steve Agnew|2017-03-16|2017-06-09|1
+Newcastle United|Sam Allardyce|2007-05-15|2008-01-09|0
+Newcastle United|Nigel Pearson|2008-01-09|2008-01-16|1
+Newcastle United|Kevin Keegan|2008-01-16|2008-09-04|0
+Newcastle United|Chris Hughton|2008-09-08|2008-09-28|1
+Newcastle United|Joe Kinnear|2008-09-29|2009-04-01|0
+Newcastle United|Alan Shearer|2009-04-01|2009-05-24|0
+Newcastle United|Chris Hughton|2009-06-01|2010-12-06|0
+Newcastle United|Alan Pardew|2010-12-09|2015-01-02|0
+Newcastle United|John Carver|2015-01-02|2015-06-10|0
+Newcastle United|Steve McClaren|2015-06-10|2016-03-11|0
+Newcastle United|Rafael Benítez|2016-03-11|2019-06-30|0
+Newcastle United|Steve Bruce|2019-07-17|2021-10-20|0
+Newcastle United|Graeme Jones|2021-10-20|2021-11-08|1
+Newcastle United|Eddie Howe|2021-11-08|2026-07-30|0
+Newcastle United|Matthias Jaissle|2026-08-05|9999-12-31|0
+Norwich City|Paul Lambert|2009-08-18|2012-06-02|0
+Norwich City|Chris Hughton|2012-06-07|2014-04-06|0
+Norwich City|Neil Adams|2014-04-06|2015-01-05|0
+Norwich City|Alex Neil|2015-01-09|2017-03-10|0
+Norwich City|Daniel Farke|2017-05-25|2021-11-06|0
+Norwich City|Dean Smith|2021-11-15|2022-12-27|0
+Nottingham Forest|Steve Cooper|2021-09-21|2023-12-19|0
+Nottingham Forest|Nuno Espírito Santo|2023-12-20|2025-09-09|0
+Nottingham Forest|Ange Postecoglou|2025-09-09|2025-10-18|0
+Nottingham Forest|Sean Dyche|2025-10-21|2026-02-12|0
+Nottingham Forest|Vítor Pereira|2026-02-15|2026-07-02|0
+Nottingham Forest|Oliver Glasner|2026-07-06|9999-12-31|0
+Portsmouth|Harry Redknapp|2005-12-07|2008-10-25|0
+Portsmouth|Joe Jordan|2008-10-25|2008-10-28|1
+Portsmouth|Tony Adams|2008-10-25|2009-02-09|0
+Portsmouth|Paul Hart|2009-02-09|2009-11-24|0
+Portsmouth|Avram Grant|2009-11-26|2010-05-21|0
+Queens Park Rangers|Neil Warnock|2010-03-01|2012-01-08|0
+Queens Park Rangers|Mark Hughes|2012-01-10|2012-11-23|0
+Queens Park Rangers|Mark Bowen|2012-11-23|2012-11-24|1
+Queens Park Rangers|Harry Redknapp|2012-11-24|2015-02-03|0
+Queens Park Rangers|Kevin Bond|2015-02-03|2015-02-12|1
+Queens Park Rangers|Chris Ramsey|2015-02-03|2015-11-04|0
+Reading|Steve Coppell|2003-10-09|2009-05-12|0
+Reading|Brian McDermott|2009-12-17|2013-03-11|0
+Reading|Nigel Adkins|2013-03-26|2014-12-15|0
+Sheffield United|Chris Wilder|2016-05-12|2021-03-13|0
+Sheffield United|Paul Heckingbottom|2021-03-13|2021-05-27|1
+Sheffield United|Paul Heckingbottom|2021-11-25|2023-12-05|0
+Sheffield United|Chris Wilder|2023-12-05|2025-06-18|0
+Southampton|Nigel Adkins|2010-09-12|2013-01-18|0
+Southampton|Mauricio Pochettino|2013-01-18|2014-05-27|0
+Southampton|Ronald Koeman|2014-06-16|2016-06-14|0
+Southampton|Claude Puel|2016-06-30|2017-06-14|0
+Southampton|Mauricio Pellegrino|2017-06-23|2018-03-12|0
+Southampton|Mark Hughes|2018-03-14|2018-12-03|0
+Southampton|Kelvin Davis|2018-12-03|2018-12-05|1
+Southampton|Ralph Hasenhüttl|2018-12-06|2022-11-07|0
+Southampton|Rubén Sellés|2022-11-07|2022-11-10|1
+Southampton|Nathan Jones|2022-11-10|2023-02-12|0
+Southampton|Rubén Sellés|2023-02-12|2023-05-28|0
+Southampton|Russell Martin|2023-06-21|2024-12-15|0
+Southampton|Simon Rusk|2024-12-15|2024-12-23|1
+Southampton|Ivan Jurić|2024-12-23|2025-04-07|0
+Southampton|Simon Rusk|2025-04-07|2025-05-25|1
+Stoke City|Tony Pulis|2006-06-15|2013-05-21|0
+Stoke City|Mark Hughes|2013-05-30|2018-01-06|0
+Stoke City|Eddie Niedzwiecki|2018-01-08|2018-01-15|1
+Stoke City|Paul Lambert|2018-01-15|2018-05-18|0
+Sunderland|Roy Keane|2006-08-30|2008-12-04|0
+Sunderland|Ricky Sbragia|2008-12-04|2009-05-24|0
+Sunderland|Steve Bruce|2009-06-03|2011-11-30|0
+Sunderland|Martin O'Neill|2011-12-03|2013-03-30|0
+Sunderland|Paolo Di Canio|2013-03-31|2013-09-22|0
+Sunderland|Kevin Ball|2013-09-22|2013-10-08|1
+Sunderland|Gus Poyet|2013-10-08|2015-03-16|0
+Sunderland|Dick Advocaat|2015-03-17|2015-10-04|0
+Sunderland|Sam Allardyce|2015-10-09|2016-07-22|0
+Sunderland|David Moyes|2016-07-23|2017-05-22|0
+Sunderland|Régis Le Bris|2024-07-01|9999-12-31|0
+Swansea City|Brendan Rodgers|2010-07-16|2012-06-01|0
+Swansea City|Michael Laudrup|2012-06-15|2014-02-04|0
+Swansea City|Garry Monk|2014-02-04|2015-12-09|0
+Swansea City|Alan Curtis|2015-12-09|2016-01-18|1
+Swansea City|Francesco Guidolin|2016-01-18|2016-10-03|0
+Swansea City|Bob Bradley|2016-10-03|2016-12-27|0
+Swansea City|Alan Curtis|2016-12-27|2017-01-03|1
+Swansea City|Paul Clement|2017-01-03|2017-12-20|0
+Swansea City|Leon Britton|2017-12-20|2017-12-28|1
+Swansea City|Carlos Carvalhal|2017-12-28|2018-05-18|0
+Tottenham|Martin Jol|2004-11-05|2007-10-25|0
+Tottenham|Clive Allen|2007-10-25|2007-10-29|1
+Tottenham|Juande Ramos|2007-10-27|2008-10-25|0
+Tottenham|Clive Allen|2008-10-25|2008-10-26|1
+Tottenham|Harry Redknapp|2008-10-26|2012-06-13|0
+Tottenham|André Villas-Boas|2012-07-06|2013-12-16|0
+Tottenham|Tim Sherwood|2013-12-16|2014-05-13|0
+Tottenham|Mauricio Pochettino|2014-05-27|2019-11-19|0
+Tottenham|José Mourinho|2019-11-20|2021-04-19|0
+Tottenham|Ryan Mason|2021-04-19|2021-06-30|1
+Tottenham|Nuno Espírito Santo|2021-06-30|2021-11-01|0
+Tottenham|Antonio Conte|2021-11-02|2023-03-26|0
+Tottenham|Cristian Stellini|2023-03-26|2023-04-24|1
+Tottenham|Ryan Mason|2023-04-24|2023-05-28|1
+Tottenham|Ange Postecoglou|2023-06-06|2025-06-06|0
+Tottenham|Thomas Frank|2025-06-12|2026-02-11|0
+Tottenham|Igor Tudor|2026-02-14|2026-03-29|0
+Tottenham|Roberto De Zerbi|2026-03-31|9999-12-31|0
+Watford|Aidy Boothroyd|2005-03-29|2008-11-03|0
+Watford|Quique Sánchez Flores|2015-06-05|2016-05-15|0
+Watford|Walter Mazzarri|2016-07-01|2017-05-21|0
+Watford|Marco Silva|2017-05-27|2018-01-21|0
+Watford|Javi Gracia|2018-01-21|2019-09-07|0
+Watford|Quique Sánchez Flores|2019-09-07|2019-12-01|0
+Watford|Hayden Mullins|2019-12-02|2019-12-07|1
+Watford|Nigel Pearson|2019-12-08|2020-07-19|0
+Watford|Hayden Mullins|2020-07-19|2020-08-15|1
+Watford|Xisco Muñoz|2020-12-20|2021-10-03|0
+Watford|Claudio Ranieri|2021-10-04|2022-01-24|0
+Watford|Roy Hodgson|2022-01-25|2022-05-22|0
+West Bromwich Albion|Tony Mowbray|2006-10-18|2009-06-16|0
+West Bromwich Albion|Roberto Di Matteo|2009-06-30|2011-02-06|0
+West Bromwich Albion|Michael Appleton|2011-02-06|2011-02-14|1
+West Bromwich Albion|Roy Hodgson|2011-02-14|2012-05-13|0
+West Bromwich Albion|Steve Clarke|2012-06-08|2013-12-14|0
+West Bromwich Albion|Keith Downing|2013-12-14|2014-01-09|1
+West Bromwich Albion|Pepe Mel|2014-01-09|2014-05-12|0
+West Bromwich Albion|Alan Irvine|2014-06-14|2014-12-29|0
+West Bromwich Albion|Rob Kelly|2014-12-29|2015-01-01|1
+West Bromwich Albion|Tony Pulis|2015-01-01|2017-11-20|0
+West Bromwich Albion|Gary Megson|2017-11-20|2017-11-29|1
+West Bromwich Albion|Alan Pardew|2017-11-29|2018-04-02|0
+West Bromwich Albion|Darren Moore|2018-04-02|2019-03-09|0
+West Bromwich Albion|Slaven Bilić|2019-06-13|2020-12-16|0
+West Bromwich Albion|Sam Allardyce|2020-12-16|2021-05-23|0
+West Ham United|Alan Curbishley|2006-12-13|2008-09-03|0
+West Ham United|Kevin Keen|2008-09-03|2008-09-15|1
+West Ham United|Gianfranco Zola|2008-09-15|2010-05-11|0
+West Ham United|Avram Grant|2010-06-03|2011-05-15|0
+West Ham United|Kevin Keen|2011-05-15|2011-06-01|1
+West Ham United|Sam Allardyce|2011-06-01|2015-05-24|0
+West Ham United|Slaven Bilić|2015-06-09|2017-11-06|0
+West Ham United|David Moyes|2017-11-07|2018-05-16|0
+West Ham United|Manuel Pellegrini|2018-05-22|2019-12-28|0
+West Ham United|David Moyes|2019-12-29|2024-05-19|0
+West Ham United|Julen Lopetegui|2024-07-01|2025-01-08|0
+West Ham United|Graham Potter|2025-01-09|2025-09-27|0
+West Ham United|Nuno Espírito Santo|2025-09-27|9999-12-31|0
+Wigan Athletic|Chris Hutchings|2007-05-14|2007-11-05|0
+Wigan Athletic|Frank Barlow|2007-11-05|2007-11-26|1
+Wigan Athletic|Steve Bruce|2007-11-26|2009-06-03|0
+Wigan Athletic|Roberto Martínez|2009-06-15|2013-05-28|0
+Wolverhampton|Mick McCarthy|2006-08-05|2012-02-14|0
+Wolverhampton|Terry Connor|2012-02-24|2012-06-30|0
+Wolverhampton|Nuno Espírito Santo|2017-05-31|2021-05-23|0
+Wolverhampton|Bruno Lage|2021-06-09|2022-10-02|0
+Wolverhampton|Steve Davis|2022-10-03|2022-11-13|1
+Wolverhampton|Julen Lopetegui|2022-11-14|2023-08-08|0
+Wolverhampton|Gary O'Neil|2023-08-09|2024-12-15|0
+Wolverhampton|Vítor Pereira|2024-12-19|2025-11-02|0
+Wolverhampton|James Collins|2025-11-02|2025-11-12|1
+Wolverhampton|Rob Edwards|2025-11-12|2026-06-11|0

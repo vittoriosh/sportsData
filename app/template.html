@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Premier League Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: white page, hairline rules, one blue accent. Header holds the club picker; four tabs below. */
+:root{
+  --bg:#ffffff; --ink:#0a0a0a; --muted:#6d6d6d; --line:#e6e6e6; --soft:#f4f4f4; --grid:#eeeeee;
+  --cur:#034694; --good:#1f8a4c; --bad:#c23a3a; --gray:#b9b9b9;
+  --body:'Hanken Grotesk',system-ui,sans-serif; color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+body.lock{overflow:hidden}
+h1,h2,h3{margin:0;text-wrap:balance}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;padding-top:20px}
+h1{font-size:20px;font-weight:700;letter-spacing:-.2px}
+.sub{color:var(--muted);font-size:13px}
+nav{display:flex;gap:22px;overflow-x:auto;margin-top:8px}
+nav button{font:500 14px var(--body);background:none;border:0;color:var(--muted);padding:10px 0;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+nav button[aria-selected="true"]{color:var(--ink);border-color:var(--ink)}
+nav button:hover{color:var(--ink)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+main{padding:26px 0 56px}
+section.view{display:none;flex-direction:column;gap:30px}
+section.view.on{display:flex}
+h2{font-size:15px;font-weight:700}
+.hint{color:var(--muted);font-size:13px;margin:4px 0 0;max-width:80ch}
+.cardhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));border-top:1px solid var(--ink)}
+.tile{padding:12px 14px 12px 0;display:flex;flex-direction:column;gap:2px}
+.tile .k{font-size:12px;color:var(--muted)}
+.tile .v{font-size:32px;font-weight:700;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
+.tile .s{font-size:12px;color:var(--muted)}
+.controls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end;margin:12px 0 4px}
+.chips{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:7px;border:0;border-bottom:2px solid transparent;background:none;color:var(--ink);padding:3px 0;font:500 13px var(--body);cursor:pointer}
+.chip i{width:16px;height:3px;display:inline-block;border-radius:2px}
+.chip[aria-pressed="false"]{color:var(--muted);text-decoration:line-through;opacity:.6}
+.chip:hover{border-color:var(--ink)}
+.btn{font:500 13px var(--body);border:1px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:999px;padding:5px 13px;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--ink);color:var(--bg)}
+.btn.ghost{border-color:var(--line)}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+select,input[type=search]{font:500 14px var(--body);background:var(--bg);color:var(--ink);border:0;border-bottom:1px solid var(--ink);border-radius:0;padding:5px 2px;min-width:110px;max-width:100%}
+label.f{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.chartbox{position:relative;margin-top:12px}
+.chartbox svg{display:block}
+svg text{fill:var(--muted);font:12px var(--body)}
+.tip{position:absolute;pointer-events:none;background:var(--bg);color:var(--ink);border:1px solid var(--ink);padding:8px 10px;font-size:12px;display:none;min-width:150px;z-index:3}
+.tip div{display:flex;justify-content:space-between;gap:14px;font-variant-numeric:tabular-nums}
+.tip i.dot{display:inline-block;width:12px;height:3px;margin-right:6px;vertical-align:middle}
+.tablewrap{overflow:auto;margin-top:10px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{padding:7px 9px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:600;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--ink)}
+th.s{cursor:pointer}
+th.s:hover{color:var(--ink)}
+th.l,td.l{text-align:left}
+th[aria-sort="ascending"]::after{content:" \25B2";font-size:8px}
+th[aria-sort="descending"]::after{content:" \25BC";font-size:8px}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--soft)}
+tr.sel td{background:#eaf1fb;font-weight:700}
+tr.zone4 td:first-child{box-shadow:inset 3px 0 0 var(--cur)}
+tr.zonerel td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
+.bar{display:inline-block;height:8px;background:var(--cur);vertical-align:middle;border-radius:1px}
+.bar.rel{background:var(--bad)}.bar.title{background:#d29a00}
+.pill{display:inline-block;min-width:24px;text-align:center;padding:0 6px;font-weight:700;font-size:12px;border:1px solid var(--ink)}
+.pill.W{background:var(--good);border-color:var(--good);color:#fff}
+.pill.D{background:#fff;color:#6d6d6d;border-color:#bdbdbd}
+.pill.L{background:#fdecec;color:#b42323;border-color:#f3c4c4}
+.cardicon{display:inline-block;width:8px;height:12px;border-radius:2px;margin-right:4px;vertical-align:-2px}
+.cardicon.y{background:#f2c200}.cardicon.r{background:#d62828}
+.zero{color:var(--muted);opacity:.55}
+.wdl{display:flex;height:10px;width:150px;border-radius:2px;overflow:hidden;background:var(--soft)}
+.wdl span{display:block;height:100%}
+.summary{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:13px;color:var(--muted);margin-top:10px}
+.summary b{color:var(--ink);font-variant-numeric:tabular-nums}
+.cols{display:grid;grid-template-columns:minmax(0,1fr);gap:30px}
+.cols>*,.card{min-width:0}
+@media(min-width:900px){.cols.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.legendline{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
+.legendline i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px}
+.fullbar{display:none;gap:8px}
+.note{font-size:13px;color:var(--muted);max-width:80ch}
+.delta.up{color:var(--good)}.delta.down{color:var(--bad)}
+footer{color:var(--muted);font-size:12px;padding:0 0 30px;max-width:80ch}
+.card.full{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;padding:12px 16px;overflow:hidden}
+.card.full .chartbox{flex:1;min-height:0;margin-top:8px}
+.card.full .chartbox svg{position:absolute;inset:0}
+.card.full .fullbar{display:flex}
+.card.full .expandbtn{display:none}
+.card.full .hint{display:none}
+.card.full .controls,.card.full .chips.scroll{flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.card.full .chip,.card.full .btn{flex:none}
+.card.full.rot{inset:auto;top:0;left:100vw;width:100vh;height:100vw;transform-origin:0 0;transform:rotate(90deg)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div><h1>Premier League Explorer</h1><span class="sub" id="asof"></span></div>
+      <label class="f" for="teamSel">Club<select id="teamSel"></select></label>
+    </div>
+    <nav role="tablist" aria-label="Views" id="tabs">
+      <button role="tab" data-v="odds" aria-selected="true">Odds</button>
+      <button role="tab" data-v="team" aria-selected="false">Club</button>
+      <button role="tab" data-v="seasons" aria-selected="false">Seasons</button>
+      <button role="tab" data-v="money" aria-selected="false">Money</button>
+      <button role="tab" data-v="mgrs" aria-selected="false">Managers</button>
+      <button role="tab" data-v="matches" aria-selected="false">Matches</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+
+<section class="view on" id="v-odds">
+  <div class="card">
+    <div class="controls" style="margin-top:0">
+      <label class="f" for="oSeason">Season<select id="oSeason"></select></label>
+      <label class="f" for="oN" style="min-width:220px">After game <span id="oNval" style="color:var(--ink)"></span><input type="range" id="oN" min="1" max="38" value="9" style="width:100%"></label>
+      <button class="btn ghost" id="oLatest">Latest</button>
+      <button class="btn ghost" id="oPrev" aria-label="One game earlier">&minus;</button>
+      <button class="btn ghost" id="oNext" aria-label="One game later">+</button>
+    </div>
+    <p class="hint" id="oHint"></p>
+  </div>
+  <div class="tiles" id="oTiles"></div>
+  <div class="card">
+    <h2 id="oTitle">Odds for every club</h2>
+    <p class="hint">Each club is matched with every club in the previous seasons that had a similar number of points after the same number of games, and we count how those clubs finished. Click a club to follow it.</p>
+    <div class="tablewrap"><table id="oTable"></table></div>
+  </div>
+  <div class="cols two">
+    <div class="card" id="cardTraj">
+      <div class="cardhead"><div><h2 id="trajTitle">How the odds have moved</h2><p class="hint">The club's odds after each game this season, using its points at that moment. Hover to read values.</p></div>
+        <div class="chips"><button class="btn expandbtn" data-card="cardTraj">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+      <div class="legendline"><span><i style="background:var(--cur)"></i>Top four</span><span><i style="background:#d29a00"></i>Title</span><span><i style="background:var(--bad)"></i>Bottom three</span></div>
+      <div class="chartbox"><svg id="trajSvg" role="img" aria-label="Odds after each game"></svg><div class="tip" id="tipA"></div></div>
+    </div>
+    <div class="card" id="cardCurve">
+      <div class="cardhead"><div><h2 id="curveTitle">Points to odds</h2><p class="hint">After the chosen number of games: how the odds change with points. The vertical line is the picked club.</p></div>
+        <div class="chips"><button class="btn expandbtn" data-card="cardCurve">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+      <div class="legendline"><span><i style="background:var(--cur)"></i>Top four</span><span><i style="background:#d29a00"></i>Title</span><span><i style="background:var(--bad)"></i>Bottom three</span></div>
+      <div class="chartbox"><svg id="curveSvg" role="img" aria-label="Odds by points after the chosen game"></svg><div class="tip" id="tipB"></div></div>
+    </div>
+  </div>
+  <div class="card" id="cardThr">
+    <div class="cardhead"><div><h2>Points needed as the season goes on</h2><p class="hint">Points after each game at which a club has a 50% or 80% historical chance of the top four, a 50% chance of the title, and a 10% or lower chance of relegation. The black line is the picked club.</p></div>
+      <div class="chips"><button class="btn expandbtn" data-card="cardThr">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+    <div class="legendline"><span><i style="background:var(--cur)"></i>Top four 80%</span><span><i style="background:#6a9be0"></i>Top four 50%</span><span><i style="background:#d29a00"></i>Title 50%</span><span><i style="background:var(--bad)"></i>Safe (relegation 10% or less)</span><span><i style="background:#111"></i>Picked club</span></div>
+    <div class="chartbox"><svg id="thrSvg" role="img" aria-label="Points needed by game number"></svg><div class="tip" id="tipC"></div></div>
+  </div>
+  <div class="card">
+    <h2 id="simTitle">Closest matches from history</h2>
+    <p class="hint" id="simHint"></p>
+    <div class="tablewrap"><table id="simTable"></table></div>
+  </div>
+</section>
+
+<section class="view" id="v-team">
+  <div class="tiles" id="tTiles"></div>
+  <div class="card" id="cardTrj">
+    <div class="cardhead"><div><h2 id="trjTitle">Spending and results, last 10 seasons</h2><p class="hint" id="trjSum"></p></div>
+      <div class="chips"><button class="btn expandbtn" data-card="cardTrj">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+    <div class="legendline"><span><i style="background:var(--cur)"></i>Net spent that season</span><span><i style="background:#b9b9b9"></i>Net income from sales</span><span><i style="background:#111"></i>3-season net spend (dashed)</span><span><i style="background:var(--cur);border-radius:50%"></i>League points</span><span><i style="background:#e8a400"></i>Points of 4th place</span></div>
+    <div class="chartbox"><svg id="trjSvg" role="img" aria-label="Transfer spending and league points by season"></svg><div class="tip" id="tipT"></div></div>
+  </div>
+  <div class="card"><h2 id="cmTitle">Managers</h2><p class="hint">Every manager with league games at this club since 2007-08. Caretakers are marked.</p><div class="tablewrap"><table id="cmTable"></table></div></div>
+  <div class="card" id="cardProg">
+    <div class="cardhead"><div><h2>Points by game, season by season</h2><p class="hint">Hover or drag across the chart to compare seasons at the same game number.</p></div>
+      <div class="chips"><button class="btn expandbtn" data-card="cardProg">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+    <div class="controls">
+      <label class="f" for="metric">Measure<select id="metric"><option value="pts">Points</option><option value="gf">Goals scored</option><option value="ga">Goals conceded</option><option value="gd">Goal difference</option><option value="y">Yellow cards</option><option value="r">Red cards</option></select></label>
+      <div class="chips">
+        <button class="btn ghost" id="selAll">All</button><button class="btn ghost" id="selLast10">Last 10</button><button class="btn ghost" id="selLast5">Last 5</button><button class="btn ghost" id="selNone">None</button><button class="btn ghost" id="avgBtn" aria-pressed="true">Average</button>
+      </div>
+    </div>
+    <div class="chips scroll" id="seasonChips" role="group" aria-label="Seasons shown" style="margin-top:6px"></div>
+    <div class="chartbox" id="lineBox"><svg id="lineSvg" role="img" aria-label="Cumulative measure by games played"></svg><div class="tip" id="tip"></div></div>
+    <p class="hint" id="lineNote"></p>
+  </div>
+  <div class="card">
+    <h2>Every season</h2>
+    <div class="tablewrap"><table id="histTable"></table></div>
+  </div>
+</section>
+
+<section class="view" id="v-seasons">
+  <div class="card">
+    <div class="controls" style="margin-top:0">
+      <label class="f" for="seasonSel">Season<select id="seasonSel"></select></label>
+    </div>
+    <div class="tablewrap"><table id="seasonTable"></table></div>
+    <p class="hint" id="seasonNote"></p>
+  </div>
+  <div class="card" id="cardNeed">
+    <div class="cardhead"><div><h2>Points it took, season by season</h2><p class="hint">Points of the champions, of 4th place (the last Champions League spot in this period) and of 17th place (the highest total to go down is 18th, so 17th is safe).</p></div>
+      <div class="chips"><button class="btn expandbtn" data-card="cardNeed">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+    <div class="legendline"><span><i style="background:#d29a00"></i>Champions</span><span><i style="background:var(--cur)"></i>4th place</span><span><i style="background:var(--bad)"></i>17th place</span></div>
+    <div class="chartbox"><svg id="needSvg" role="img" aria-label="Points of 1st, 4th and 17th place by season"></svg></div>
+  </div>
+</section>
+
+<section class="view" id="v-money">
+  <div class="card">
+    <h2>Did the money help?</h2>
+    <p class="hint">Pick how many seasons of spending to add up and the season they end in. We compare each club's points the season before the spending started with its points in the final season, and see whether the biggest spenders improved more than everyone else.</p>
+    <div class="controls">
+      <label class="f" for="moYears">Years of spending<select id="moYears"><option value="1">1 season</option><option value="2">2 seasons</option><option value="3" selected>3 seasons</option><option value="4">4 seasons</option><option value="5">5 seasons</option></select></label>
+      <label class="f" for="moEnd">Ending in<select id="moEnd"></select></label>
+    </div>
+    <p class="hint" id="moNote"></p>
+  </div>
+  <div class="card" id="moHeadCard"><h2 id="moHeadTitle"></h2><p id="moHead" style="margin:6px 0 0;max-width:80ch"></p></div>
+  <div class="tiles" id="moTiles"></div>
+  <div class="card">
+    <h2 id="moTitle">Club by club</h2>
+    <p class="hint">Blue bars show net spending (money paid minus money received), green or red bars show the change in league points. Verdicts: <b>Helped</b> means an above-median spender gained 8 or more points. <b>Did not help</b> means an above-median spender lost 8 or more. Clubs that spent less are labelled by what happened to them. Everything in between is <b>little change</b>.</p>
+    <div class="tablewrap"><table id="moTable"></table></div>
+  </div>
+  <div class="card" id="cardDb">
+    <div class="cardhead"><div><h2 id="dbTitle">Spending rank against finishing rank</h2><p class="hint">One row per club, biggest spender at the top. The grey dot is where the club ranks for net spending that season, the blue dot is where it finished. A green line means it finished higher than its spending suggests, red means lower.</p></div>
+      <div class="chips"><button class="btn expandbtn" data-card="cardDb">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+    <div class="chartbox"><svg id="dbSvg" role="img" aria-label="Spending rank against finishing rank for each club"></svg></div>
+  </div>
+  <div class="card">
+    <h2>Do big spenders finish higher?</h2>
+    <div class="controls" style="margin-top:6px"><label class="f" for="bandBy">Group clubs by<select id="bandBy"><option value="gross">Money paid for players (gross spending)</option><option value="net">Net spending (paid minus received)</option></select></label></div>
+    <p class="hint">Every season from 2007-08 to 2022-23, clubs are grouped by spending that season (64 club-seasons per group), then we look at how each group finished. Net spending ranks some big clubs low because they also sell a lot, so gross spending is the better measure of how much a club invests.</p>
+    <div class="tablewrap"><table id="bandTable"></table></div>
+  </div>
+  <div class="cols two">
+    <div class="card"><h2>Spent least, finished highest</h2><p class="hint">The biggest gaps between spending rank and finishing rank, 2007-08 to 2022-23 (rank among all 20 clubs).</p><div class="tablewrap"><table id="bestTable"></table></div></div>
+    <div class="card"><h2>Spent most, finished lowest</h2><p class="hint">The biggest gaps the other way, same seasons.</p><div class="tablewrap"><table id="worstTable"></table></div></div>
+  </div>
+</section>
+
+<section class="view" id="v-mgrs">
+  <div class="tiles" id="mgTiles"></div>
+  <div class="card">
+    <div class="cardhead"><div><h2>Manager records</h2><p class="hint">League games only, 2007-08 onwards, all clubs. Points per game is the fairest comparison; remember clubs differ hugely in resources. Click a manager for their spells.</p></div></div>
+    <div class="controls">
+      <label class="f" for="mgMin" style="min-width:200px">Minimum games <span id="mgMinV" style="color:var(--ink)"></span><input type="range" id="mgMin" min="1" max="380" value="76" style="width:100%"></label>
+      <button class="btn ghost" id="mgCare" aria-pressed="false">Include caretakers</button>
+      <label class="f" for="mgSearch">Search<input type="search" id="mgSearch" placeholder="Name or club"></label>
+    </div>
+    <div class="tablewrap" style="max-height:620px"><table id="mgTable"></table></div>
+  </div>
+  <div class="card">
+    <h2>Managers used each season</h2>
+    <p class="hint">Permanent managers who took charge of at least one league game, counting caretakers separately. In-season changes are managers who started a game in the middle of the season.</p>
+    <div class="tablewrap"><table id="chgTable"></table></div>
+  </div>
+  <div class="card">
+    <h2>The new-manager bounce</h2>
+    <p class="hint" id="bounceHint"></p>
+    <div class="tiles" id="bounceTiles" style="margin-top:10px"></div>
+    <div class="tablewrap"><table id="bounceTable"></table></div>
+  </div>
+</section>
+
+<section class="view" id="v-matches">
+  <div class="card">
+    <div class="controls" style="margin-top:0">
+      <label class="f" for="mTeam">Club<select id="mTeam"></select></label>
+      <label class="f" for="mSeason">Season<select id="mSeason"></select></label>
+      <label class="f" for="mRes">Result<select id="mRes"><option value="">All results</option><option value="W">Wins</option><option value="D">Draws</option><option value="L">Defeats</option></select></label>
+      <label class="f" for="mVenue">Venue<select id="mVenue"><option value="">Home and away</option><option value="H">Home</option><option value="A">Away</option></select></label>
+      <label class="f" for="mOpp">Opponent<input type="search" id="mOpp" placeholder="Type a club"></label>
+    </div>
+    <div class="summary" id="mSummary"></div>
+    <div class="tablewrap" style="max-height:640px"><table id="matchTable"></table></div>
+    <p class="hint">Result, venue and opponent filters need a club picked. A dash means card data is not available for that game.</p>
+  </div>
+</section>
+
+<footer id="foot"></footer>
+</main>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(function(){
+const D=JSON.parse(document.getElementById('data').textContent);
+const T=D.teams, S=D.seasons, CUR=S.length-1;
+const M=D.matches.map(r=>({s:r[0],d:r[1],h:r[2],a:r[3],hg:r[4],ag:r[5],hy:r[6],ay:r[7],hr:r[8],ar:r[9],hm:r[10],am:r[11]}));
+const MG=D.mgr.map((r,i)=>({i,name:r[0],club:r[1],from:r[2],until:r[3],care:!!r[4]}));
+const TRK={};D.tr.forEach(r=>{TRK[r[0]+'|'+r[1]]={spend:r[2],inc:r[3],net:r[4],gbp:!!r[5],gross:!!r[6],part:!!r[7]};});
+const FX=D.fixtures.map((r,i)=>({i,d:r[0],h:r[1],a:r[2]}));
+const $=id=>document.getElementById(id);
+const sgn=n=>n>0?'+'+n:String(n);
+const ord=n=>{const v=n%100,s=['th','st','nd','rd'];return n+(s[(v-20)%10]||s[v]||s[0]);};
+const pc=p=>p>=.995?'>99%':p<.005?(p>0?'<1%':'0%'):Math.round(p*100)+'%';
+const dt=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});};
+const dts=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});};
+const MS=S.map(()=>[]); M.forEach(m=>MS[m.s].push(m));
+const curSet=new Set(D.current);
+let team=T.indexOf('Chelsea');
+
+/* ---------- tables ---------- */
+const tabCache={};
+function seasonTable(si){
+  if(tabCache[si])return tabCache[si];
+  const R={};
+  MS[si].forEach(m=>{
+    [[m.h,m.hg,m.ag,m.hy,m.hr],[m.a,m.ag,m.hg,m.ay,m.ar]].forEach(([t,gf,ga,y,r])=>{
+      const o=R[t]||(R[t]={t,P:0,W:0,D:0,L:0,GF:0,GA:0,Y:0,R:0,cd:0});
+      o.P++;o.GF+=gf;o.GA+=ga;o[gf>ga?'W':gf===ga?'D':'L']++;
+      if(y!==null){o.Y+=y;o.R+=r;o.cd++;}
+    });
+  });
+  const rows=Object.values(R);
+  rows.forEach(o=>{o.ded=D.ded[si+'|'+o.t]||0;o.GD=o.GF-o.GA;o.Pts=3*o.W+o.D-o.ded;});
+  rows.sort((a,b)=>b.Pts-a.Pts||b.GD-a.GD||b.GF-a.GF);
+  rows.forEach((o,i)=>o.pos=i+1);
+  return tabCache[si]=rows;
+}
+const rowOf=(si,t)=>seasonTable(si).find(o=>o.t===t);
+function res(m,t){const own=m.h===t;const gf=own?m.hg:m.ag,ga=own?m.ag:m.hg;return gf>ga?'W':gf===ga?'D':'L';}
+function teamGames(t,si){return MS[si].filter(m=>m.h===t||m.a===t).map(m=>{const own=m.h===t;return {d:m.d,gf:own?m.hg:m.ag,ga:own?m.ag:m.hg,y:own?m.hy:m.ay,r:own?m.hr:m.ar,opp:own?m.a:m.h,home:own,mg:own?m.hm:m.am,m};});}
+
+
+/* ---------- managers and money helpers ---------- */
+const mfmt=v=>v===null||v===undefined?'<span class="zero">&ndash;</span>':(v<0?'&minus;':'')+Math.abs(Math.round(v))+'m';
+const mny=(v,c)=>v===null||v===undefined?'<span class="zero">&ndash;</span>':(v<-0.5?'&minus;':'')+c+Math.abs(Math.round(v))+'m';
+function spearman(pts){const rk=a=>{const o=a.map((v,i)=>[v,i]).sort((x,y)=>x[0]-y[0]),r=new Array(a.length);let i=0;while(i<o.length){let j=i;while(j+1<o.length&&o[j+1][0]===o[i][0])j++;const av=(i+j)/2+1;for(let k=i;k<=j;k++)r[o[k][1]]=av;i=j+1;}return r;};const x=rk(pts.map(p=>p.x)),y=rk(pts.map(p=>p.y)),n=x.length,mx=x.reduce((a,b)=>a+b,0)/n,my=y.reduce((a,b)=>a+b,0)/n;let sxy=0,sxx=0,syy=0;for(let i=0;i<n;i++){sxy+=(x[i]-mx)*(y[i]-my);sxx+=(x[i]-mx)**2;syy+=(y[i]-my)**2;}return sxy/Math.sqrt(sxx*syy);}
+const sym=(si,t)=>{const x=TRK[si+'|'+t];return x?(x.gbp?'£':'€'):'';};
+const TS={};
+M.forEach(m=>{[[m.hm,m.hg,m.ag],[m.am,m.ag,m.hg]].forEach(([id,gf,ga])=>{const o=TS[id]||(TS[id]={g:0,w:0,d:0,l:0,gf:0,ga:0});o.g++;o.gf+=gf;o.ga+=ga;if(gf>ga)o.w++;else if(gf===ga)o.d++;else o.l++;});});
+const mainCache={};
+function mainMgr(si,t){
+  const k=si+'|'+t;if(mainCache[k])return mainCache[k];
+  const c={};MS[si].forEach(m=>{if(m.h===t)c[m.hm]=(c[m.hm]||0)+1;else if(m.a===t)c[m.am]=(c[m.am]||0)+1;});
+  const ids=Object.keys(c).map(Number).sort((a,b)=>c[b]-c[a]);
+  if(!ids.length)return mainCache[k]=null;
+  return mainCache[k]={name:MG[ids[0]].name,n:c[ids[0]],care:MG[ids[0]].care,others:ids.slice(1).map(i=>MG[i].name+(MG[i].care?' (caretaker)':''))};
+}
+function regress(pts){
+  const n=pts.length;if(n<4)return null;const mx=pts.reduce((a,p)=>a+p.x,0)/n,my=pts.reduce((a,p)=>a+p.y,0)/n;
+  const sxx=pts.reduce((a,p)=>a+(p.x-mx)**2,0),sxy=pts.reduce((a,p)=>a+(p.x-mx)*(p.y-my),0),syy=pts.reduce((a,p)=>a+(p.y-my)**2,0);
+  if(!sxx)return null;const b=sxy/sxx,a=my-b*mx;return {a,b,r2:sxy*sxy/(sxx*syy)};
+}
+function moneyRows(si){
+  const rows=seasonTable(si).map(o=>({...o,tr:TRK[si+'|'+o.t]||null})).filter(o=>o.tr&&o.tr.net!==null);
+  const bySpend=[...rows].sort((a,b)=>b.tr.net-a.tr.net);bySpend.forEach((o,i)=>o.spendRank=i+1);
+  const byPos=[...rows].sort((a,b)=>a.pos-b.pos);byPos.forEach((o,i)=>o.posRank=i+1);
+  rows.forEach(o=>o.gap=o.spendRank-o.posRank);
+  const reg=regress(rows.map(o=>({x:o.tr.net,y:o.Pts})));
+  rows.forEach(o=>{o.res=reg?o.Pts-(reg.a+reg.b*o.tr.net):null;});
+  return {rows,reg};
+}
+
+/* ---------- historical odds ---------- */
+const DONE=S.map((_,si)=>si).filter(si=>si!==CUR&&MS[si].length>=380);
+const REC=Array.from({length:39},()=>[]);
+DONE.forEach(si=>{seasonTable(si).forEach(o=>{let p=0;teamGames(o.t,si).forEach((x,i)=>{p+=x.gf>x.ga?3:x.gf===x.ga?1:0;REC[i+1].push({p,pos:o.pos,fp:o.Pts,si,t:o.t});});});});
+const memo={};
+function odds(n,p,excl){
+  const k=n+'|'+p+'|'+excl;if(memo[k])return memo[k];
+  const pool=REC[n].filter(r=>r.si!==excl);let w=0,sel=[];
+  for(;w<=14;w++){sel=pool.filter(r=>Math.abs(r.p-p)<=w);if(sel.length>=25)break;}
+  if(sel.length<25){sel=pool.slice().sort((a,b)=>Math.abs(a.p-p)-Math.abs(b.p-p)).slice(0,25);w=Math.max(...sel.map(r=>Math.abs(r.p-p)));}
+  let sw=0,t=0,t4=0,rel=0,fp=0,pos=0;
+  sel.forEach(r=>{const q=1-Math.abs(r.p-p)/(w+1);sw+=q;t+=q*(r.pos===1);t4+=q*(r.pos<=4);rel+=q*(r.pos>=18);fp+=q*r.fp;pos+=q*r.pos;});
+  return memo[k]={n:sel.length,w,title:t/sw,top4:t4/sw,rel:rel/sw,fp:fp/sw,pos:pos/sw};
+}
+function standing(si,n){ // each club's record after its first n games (or fewer if it has played fewer)
+  const rows=[];const by={};
+  MS[si].forEach(m=>{(by[m.h]||(by[m.h]=[])).push([m.d,m.hg,m.ag]);(by[m.a]||(by[m.a]=[])).push([m.d,m.ag,m.hg]);});
+  Object.keys(by).forEach(t=>{const g=by[t].sort((a,b)=>a[0]<b[0]?-1:1).slice(0,n);let p=0,gd=0,gf=0;g.forEach(x=>{p+=x[1]>x[2]?3:x[1]===x[2]?1:0;gd+=x[1]-x[2];gf+=x[1];});rows.push({t:+t,g:g.length,p,gd,gf});});
+  rows.sort((a,b)=>b.p-a.p||b.gd-a.gd||b.gf-a.gf);rows.forEach((r,i)=>r.rank=i+1);return rows;
+}
+let oSi=CUR,oN=9;
+function maxGames(si){return Math.max(...standing(si,38).map(r=>r.g));}
+function syncSlider(){const mg=maxGames(oSi);$('oN').max=mg;oN=Math.max(1,Math.min(oN,mg));$('oN').value=oN;$('oNval').textContent=oN+(oSi===CUR?' (latest: '+mg+')':'');}
+$('oSeason').innerHTML=S.map((s,i)=>`<option value="${i}">${s}${i===CUR?' (in progress)':''}</option>`).reverse().join('');$('oSeason').value=CUR;
+$('oSeason').addEventListener('change',()=>{oSi=+$('oSeason').value;oN=oSi===CUR?maxGames(CUR):Math.min(oN,38);syncSlider();draw();});
+$('oN').addEventListener('input',()=>{oN=+$('oN').value;syncSlider();draw();});
+$('oLatest').onclick=()=>{oN=maxGames(oSi);syncSlider();draw();};
+$('oPrev').onclick=()=>{oN=Math.max(1,oN-1);syncSlider();draw();};
+$('oNext').onclick=()=>{oN=Math.min(maxGames(oSi),oN+1);syncSlider();draw();};
+function drawOdds(){
+  syncSlider();
+  const st=standing(oSi,oN),excl=oSi,fin=oSi===CUR?null:seasonTable(oSi);
+  const rows=st.map(r=>({...r,o:odds(r.g,r.p,excl),fin:fin?fin.find(f=>f.t===r.t).pos:null}));
+  const me=rows.find(r=>r.t===team);
+  const hasFin=!!fin;
+  if(me){
+    const tiles=[['Top four',pc(me.o.top4),'Clubs like this finished 1st to 4th this often'],['Title',pc(me.o.title),'Finished 1st'],['Bottom three',pc(me.o.rel),'Finished 18th to 20th'],['Typical final points',Math.round(me.o.fp)+'','Average of the matching clubs'],[hasFin?'Actually finished':'Matching clubs',hasFin?ord(me.fin):me.o.n+'',hasFin?'Final position in '+S[oSi]:'Within '+me.o.w+' point'+(me.o.w===1?'':'s')+' after '+me.g+' games']];
+    $('oTiles').innerHTML=tiles.map(t=>`<div class="tile"><span class="k">${T[team]} &middot; ${t[0]}</span><span class="v">${t[1]}</span><span class="s">${t[2]}</span></div>`).join('');
+  }else $('oTiles').innerHTML=`<div class="tile"><span class="k">${T[team]}</span><span class="v">Not in ${S[oSi]}</span><span class="s">Pick another club or season.</span></div>`;
+  $('oHint').textContent=oSi===CUR?`Odds use each club's points after ${oN} games (clubs that have played fewer use what they have). Matched against ${DONE.length} completed seasons, 2007-08 to ${S[DONE[DONE.length-1]]}.`:`Backtest: ${S[oSi]} is left out of the history, so the odds use only other seasons. Compare with the final column.`;
+  $('oTitle').textContent=`Odds after ${oN} games, ${S[oSi]}`;
+  let h='<thead><tr><th>#</th><th class="l">Club</th><th>Gms</th><th>Pts</th><th>GD</th><th class="l">Top four</th><th>Title</th><th>Bottom three</th><th>Typical final pts</th><th>Matches</th>'+(hasFin?'<th>Finished</th>':'')+'</tr></thead><tbody>';
+  rows.forEach(r=>{h+=`<tr class="row ${r.t===team?'sel':''}" data-t="${r.t}"><td>${r.rank}</td><td class="l">${T[r.t]}</td><td>${r.g}</td><td><b>${r.p}</b></td><td>${sgn(r.gd)}</td><td class="l"><span class="bar" style="width:${Math.round(r.o.top4*80)}px"></span> ${pc(r.o.top4)}</td><td>${pc(r.o.title)}</td><td><span class="bar rel" style="width:${Math.round(r.o.rel*40)}px"></span> ${pc(r.o.rel)}</td><td>${Math.round(r.o.fp)}</td><td>${r.o.n}</td>${hasFin?`<td><b>${r.fin}</b></td>`:''}</tr>`;});
+  $('oTable').innerHTML=h+'</tbody>';
+  $('oTable').querySelectorAll('tr.row').forEach(tr=>tr.addEventListener('click',()=>pick(+tr.dataset.t)));
+  drawTraj();drawCurve(rows,me);drawThr();drawSim(me);
+}
+function chart(id,tipId,cfg){
+  const svg=$(id),box=svg.parentElement,dm=dims(box),W=dm.W,H=dm.H||cfg.h||320,m={l:cfg.ml||44,r:14,t:12,b:36},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const X=x=>m.l+(x-cfg.x0)/(cfg.x1-cfg.x0)*iw,Y=y=>m.t+ih-(y-cfg.y0)/(cfg.y1-cfg.y0)*ih;let g='';
+  cfg.yt.forEach(v=>{g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l-6}" y="${Y(v)+4}" text-anchor="end">${cfg.yf?cfg.yf(v):v}</text>`;});
+  cfg.xt.forEach(v=>{g+=`<text x="${X(v)}" y="${H-m.b+16}" text-anchor="middle">${v}</text>`;});
+  g+=`<text x="${m.l+iw/2}" y="${H-4}" text-anchor="middle">${cfg.xl}</text>`;
+  (cfg.vl||[]).forEach(v=>{g+=`<line x1="${X(v.x)}" x2="${X(v.x)}" y1="${m.t}" y2="${m.t+ih}" stroke="${v.c||'var(--ink)'}" stroke-width="1.5" stroke-dasharray="${v.d||''}" opacity=".7"/>`;});
+  cfg.series.forEach(s=>{let d='',pen=false;cfg.xs.forEach((x,i)=>{const y=s.ys[i];if(y===null||y===undefined){pen=false;return;}d+=(pen?'L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1);pen=true;});
+    g+=`<path d="${d}" fill="none" stroke="${s.c}" stroke-width="${s.w||2.2}" stroke-linejoin="round" stroke-dasharray="${s.d||''}"/>`;});
+  g+='<g id="hov"></g>';g+=`<rect id="hit" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" style="cursor:crosshair"/>`;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('width',W);svg.setAttribute('height',H);svg.innerHTML=g;
+  const hit=svg.querySelector('#hit'),hov=svg.querySelector('#hov'),tip=$(tipId);
+  const move=ev=>{const r=svg.getBoundingClientRect(),px=((fullCard&&rot)?(ev.clientY-r.top):(ev.clientX-r.left))-m.l,xv=cfg.x0+px/iw*(cfg.x1-cfg.x0);
+    let bi=0,bd=1e9;cfg.xs.forEach((x,i)=>{const d=Math.abs(x-xv);if(d<bd){bd=d;bi=i;}});const x=cfg.xs[bi];
+    let hs=`<line x1="${X(x)}" x2="${X(x)}" y1="${m.t}" y2="${m.t+ih}" stroke="var(--ink)" stroke-opacity=".35"/>`,t=`<b>${cfg.th(x)}</b>`;
+    cfg.series.forEach(s=>{const y=s.ys[bi];if(y===null||y===undefined)return;hs+=`<circle cx="${X(x)}" cy="${Y(y)}" r="4" fill="${s.c}" stroke="#fff" stroke-width="1.5"/>`;t+=`<div><span><i class="dot" style="background:${s.c}"></i>${s.n}</span><b>${cfg.vf?cfg.vf(y):y}</b></div>`;});
+    if(cfg.tx)t+=cfg.tx(x);hov.innerHTML=hs;tip.innerHTML=t;tip.style.display='block';let left=X(x)+14;if(left+tip.offsetWidth>box.clientWidth)left=X(x)-tip.offsetWidth-14;tip.style.left=Math.max(0,left)+'px';tip.style.top='8px';};
+  hit.addEventListener('pointermove',move);hit.addEventListener('pointerdown',move);hit.addEventListener('pointerleave',()=>{hov.innerHTML='';tip.style.display='none';});
+}
+const PCT={y0:0,y1:1,yt:[0,.2,.4,.6,.8,1],yf:v=>Math.round(v*100)+'%',vf:v=>pc(v)};
+function drawTraj(){
+  const g=teamGames(team,oSi);$('trajTitle').textContent=`How the odds moved: ${T[team]}, ${S[oSi]}`;
+  if(!g.length){$('trajSvg').innerHTML='';return;}
+  let p=0;const xs=[],t4=[],ti=[],rl=[],ps=[];
+  g.forEach((x,i)=>{p+=x.gf>x.ga?3:x.gf===x.ga?1:0;const o=odds(i+1,p,oSi);xs.push(i+1);t4.push(o.top4);ti.push(o.title);rl.push(o.rel);ps.push(p);});
+  chart('trajSvg','tipA',{xs,x0:1,x1:Math.max(38,xs.length),xt:[1,5,10,15,20,25,30,35,38],xl:'Games played',...PCT,
+    series:[{n:'Top four',c:'var(--cur)',ys:t4,w:3},{n:'Title',c:'#d29a00',ys:ti},{n:'Bottom three',c:'var(--bad)',ys:rl}],vl:[{x:Math.min(oN,xs.length),d:'4 3'}],
+    th:x=>`After game ${x}: ${ps[x-1]} points`});
+}
+function drawCurve(rows,me){
+  const n=me?me.g:oN,pool=REC[n],lo=Math.max(0,Math.min(...pool.map(r=>r.p))-1),hi=Math.max(...pool.map(r=>r.p))+1;
+  const xs=[];for(let p=lo;p<=hi;p++)xs.push(p);const ov=xs.map(p=>odds(n,p,oSi));
+  $('curveTitle').textContent=`Points to odds after ${n} games`;
+  const vl=[];if(me)vl.push({x:me.p,d:'4 3'});
+  chart('curveSvg','tipB',{xs,x0:lo,x1:hi,xt:xs.filter(p=>p%Math.max(1,Math.ceil((hi-lo)/9))===0||p===lo),xl:`Points after ${n} games`,...PCT,
+    series:[{n:'Top four',c:'var(--cur)',ys:ov.map(o=>o.top4),w:3},{n:'Title',c:'#d29a00',ys:ov.map(o=>o.title)},{n:'Bottom three',c:'var(--bad)',ys:ov.map(o=>o.rel)}],vl,
+    th:x=>`${x} points after ${n} games`,tx:x=>`<div style="opacity:.8"><span>Matching clubs</span><b>${odds(n,x,oSi).n}</b></div>`});
+}
+let thrCache=null;
+function thresholds(){
+  if(thrCache)return thrCache;const out={n:[],t80:[],t50:[],title:[],safe:[]};
+  for(let n=1;n<=38;n++){let a=null,b=null,c=null,d=null;
+    for(let p=0;p<=3*n;p++){const o=odds(n,p,-1);if(b===null&&o.top4>=.5)b=p;if(a===null&&o.top4>=.8)a=p;if(c===null&&o.title>=.5)c=p;if(d===null&&o.rel<=.1)d=p;}
+    out.n.push(n);out.t80.push(a);out.t50.push(b);out.title.push(c);out.safe.push(d);}
+  return thrCache=out;
+}
+function drawThr(){
+  const th=thresholds(),g=teamGames(team,oSi);let p=0;const mine=th.n.map(n=>{if(n>g.length)return null;p+=g[n-1].gf>g[n-1].ga?3:g[n-1].gf===g[n-1].ga?1:0;return p;});
+  const mx=Math.max(...th.title.filter(v=>v!==null),...mine.filter(v=>v!==null))+3;const sc=nice(mx,0);
+  chart('thrSvg','tipC',{xs:th.n,x0:1,x1:38,xt:[1,5,10,15,20,25,30,35,38],xl:'Games played',y0:sc.lo,y1:sc.hi,yt:sc.t,h:340,
+    series:[{n:'Title 50%',c:'#d29a00',ys:th.title},{n:'Top four 80%',c:'var(--cur)',ys:th.t80,w:3},{n:'Top four 50%',c:'#6a9be0',ys:th.t50},{n:'Safe',c:'var(--bad)',ys:th.safe},{n:T[team],c:'#111',ys:mine,d:'5 4',w:2.4}],
+    th:x=>`After game ${x}`,vl:[{x:Math.min(oN,38),c:'var(--gray)',d:'3 3'}]});
+}
+function drawSim(me){
+  if(!me){$('simTable').innerHTML='';$('simHint').textContent='';return;}
+  const pool=REC[me.g].filter(r=>r.si!==oSi).sort((a,b)=>Math.abs(a.p-me.p)-Math.abs(b.p-me.p)||b.si-a.si).slice(0,16);
+  $('simTitle').textContent=`Closest matches from history for ${T[team]}`;
+  $('simHint').textContent=`${T[team]} have ${me.p} points after ${me.g} games. These club-seasons were closest, and how they ended.`;
+  let h='<thead><tr><th class="l">Season</th><th class="l">Club</th><th>Pts after '+me.g+'</th><th>Finished</th><th>Final pts</th></tr></thead><tbody>';
+  pool.forEach(r=>{h+=`<tr class="${r.t===team?'sel':''}"><td class="l">${S[r.si]}</td><td class="l">${T[r.t]}</td><td>${r.p}</td><td><b>${r.pos}</b>${r.pos<=4?' <span class="bar" style="width:8px"></span>':r.pos>=18?' <span class="bar rel" style="width:8px"></span>':''}</td><td>${r.fp}</td></tr>`;});
+  $('simTable').innerHTML=h+'</tbody>';
+}
+/* ---------- full screen ---------- */
+let fullCard=null,rot=false;
+function dims(box){const f=fullCard&&fullCard.contains(box);return {W:Math.max(300,box.clientWidth),H:f?Math.max(220,box.clientHeight):null};}
+function setFull(card){
+  if(fullCard){fullCard.classList.remove('full','rot');fullCard.querySelectorAll('[data-act="rotate"]').forEach(b=>b.setAttribute('aria-pressed','false'));}
+  fullCard=card;rot=false;hoverN=null;$('tip').style.display='none';document.body.classList.toggle('lock',!!card);
+  if(card){card.classList.add('full');if(innerHeight>innerWidth&&innerWidth<700){rot=true;card.classList.add('rot');card.querySelectorAll('[data-act="rotate"]').forEach(b=>b.setAttribute('aria-pressed','true'));}}
+  draw();
+}
+document.querySelectorAll('.expandbtn').forEach(b=>b.addEventListener('click',()=>setFull($(b.dataset.card))));
+document.querySelectorAll('[data-act]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.act==='close')return setFull(null);rot=!rot;fullCard.classList.toggle('rot',rot);b.setAttribute('aria-pressed',rot);draw();}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&fullCard)setFull(null);});
+
+/* ---------- tabs and picker ---------- */
+const VIEWS=['odds','team','seasons','money','mgrs','matches'];
+function show(v){
+  if(fullCard)setFull(null);
+  document.querySelectorAll('section.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  try{if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);}catch(e){}
+  draw();
+}
+document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.v)));
+window.addEventListener('hashchange',()=>{const h=(location.hash||'').slice(1);if(VIEWS.includes(h))show(h);});
+function current(){return document.querySelector('section.view.on').id.slice(2);}
+function fillTeams(){
+  const inCur=[...D.current].sort((a,b)=>T[a].localeCompare(T[b])), others=T.map((_,i)=>i).filter(i=>!curSet.has(i)).sort((a,b)=>T[a].localeCompare(T[b]));
+  const opt=i=>`<option value="${i}">${T[i]}</option>`;
+  const html=`<optgroup label="In the league now">${inCur.map(opt).join('')}</optgroup><optgroup label="Other clubs since 2007-08">${others.map(opt).join('')}</optgroup>`;
+  $('teamSel').innerHTML=html; $('teamSel').value=team;
+  $('mTeam').innerHTML='<option value="-1">All clubs</option>'+html; $('mTeam').value=team;
+}
+$('teamSel').addEventListener('change',()=>{team=+$('teamSel').value;$('mTeam').value=team;hoverN=null;draw();});
+function pick(t){team=t;$('teamSel').value=t;$('mTeam').value=t;draw();}
+
+/* ---------- outlook ---------- */
+function drawOutlook(){
+  const inLeague=curSet.has(team), tbl=seasonTable(CUR);
+  const o=base.teams[team], c=rowOf(CUR,team);
+  if(inLeague){
+    const tiles=[['Top four',pc(o.top4),'Chance of finishing 1st to 4th'],['Title',pc(o.title),'Chance of finishing 1st'],['Relegation',pc(o.rel),'Chance of finishing 18th to 20th'],
+      ['Expected finish',ord(Math.round(o.exp)),'Average position '+o.exp.toFixed(1)],['Expected points',Math.round(o.mean)+'','Middle 80%: '+o.p10+' to '+o.p90]];
+    $('oTiles').innerHTML=tiles.map(t=>`<div class="tile"><span class="k">${t[0]} &middot; ${T[team]}</span><span class="v">${t[1]}</span><span class="s">${t[2]}</span></div>`).join('');
+  }else{
+    $('oTiles').innerHTML=`<div class="tile"><span class="k">${T[team]}</span><span class="v">Not in the league</span><span class="s">${T[team]} is not in the 2026-27 Premier League. Pick a club in the league to see projections.</span></div>`;
+  }
+  const rows=D.current.map(t=>({t,o:base.teams[t],r:rowOf(CUR,t)})).sort((a,b)=>b.o.mean-a.o.mean);
+  const maxT4=1;
+  let h='<thead><tr><th class="l">Club</th><th>Pld</th><th>Pts</th><th>GD</th><th>Proj. pts</th><th>Range</th><th>Exp. pos</th><th>Title</th><th class="l">Top four</th><th>Bottom three</th></tr></thead><tbody>';
+  rows.forEach((x,i)=>{
+    h+=`<tr class="row ${x.t===team?'sel':''} ${i<4?'zone4':i>=17?'zonerel':''}" data-t="${x.t}"><td class="l">${T[x.t]}</td><td>${x.r?x.r.P:0}</td><td>${x.r?x.r.Pts:0}</td><td>${x.r?sgn(x.r.GD):'0'}</td><td><b>${Math.round(x.o.mean)}</b></td><td>${x.o.p10}-${x.o.p90}</td><td>${x.o.exp.toFixed(1)}</td><td>${pc(x.o.title)}</td><td class="l"><span class="bar" style="width:${Math.round(x.o.top4*70)}px"></span> ${pc(x.o.top4)}</td><td><span class="bar rel" style="width:${Math.round(x.o.rel*40)}px"></span> ${pc(x.o.rel)}</td></tr>`;
+  });
+  $('raceTable').innerHTML=h+'</tbody>';
+  $('raceTable').querySelectorAll('tr.row').forEach(tr=>tr.addEventListener('click',()=>pick(+tr.dataset.t)));
+  const playedN=MS[CUR].length;
+  $('raceHint').textContent=`Sorted by projected points. From ${playedN} games played and ${FX.length} to go, simulated 8,000 times. "Range" is the middle 80% of simulated point totals. Click a club to follow it.`;
+  // position chart
+  $('posTitle').textContent=inLeague?`Where ${T[team]} could finish`:'Where it could finish';
+  if(inLeague)posChart(o.pos);else $('posSvg').innerHTML='';
+  // cut table
+  const hist=S.slice(0,-1).map((_,si)=>seasonTable(si));
+  const range=(k)=>{const v=hist.map(t=>t[k].Pts);return [Math.min(...v),Math.round(v.reduce((a,b)=>a+b,0)/v.length),Math.max(...v)];};
+  const spots=[['Champions',0],['4th place (top four)',3],['6th place',5],['17th place (safe)',16]];
+  let c2='<thead><tr><th class="l">Place</th><th>Simulated median</th><th>Simulated range</th><th>Past seasons (low / average / high)</th></tr></thead><tbody>';
+  spots.forEach(([lab,k])=>{const r=range(k);const s=base.slots[k];c2+=`<tr><td class="l">${lab}</td><td><b>${s.p50}</b></td><td>${s.p10}-${s.p90}</td><td>${r[0]} / ${r[1]} / ${r[2]}</td></tr>`;});
+  $('cutTable').innerHTML=c2+'</tbody>';
+  if(inLeague){
+    const need=base.slots[3].p50, me=o.mean;
+    $('cutNote').textContent=`In the simulations the fourth-placed club usually finishes on about ${need} points. ${T[team]} projects to ${Math.round(me)}, so about ${me>=need?Math.round(me-need)+' above':Math.round(need-me)+' below'} that mark on average.`;
+  }else $('cutNote').textContent='';
+  $('raceTitle').textContent='Race for the top four';
+}
+function posChart(probs){
+  const svg=$('posSvg'),dm=dims(svg.parentElement),W=dm.W,H=dm.H||300,m={l:40,r:8,t:14,b:30},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const mx=Math.max(.05,Math.max(...probs)*1.15),sc=nice(mx,0),Y=v=>m.t+ih-v/sc.hi*ih,band=iw/20,bw=Math.min(28,band*.7);
+  let g='';sc.t.forEach(v=>{g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l-6}" y="${Y(v)+4}" text-anchor="end">${Math.round(v*100)}%</text>`;});
+  probs.forEach((p,i)=>{const cx=m.l+band*i+band/2,col=i<4?'var(--cur)':i>=17?'var(--bad)':'var(--gray)';
+    g+=`<rect x="${cx-bw/2}" y="${Y(p)}" width="${bw}" height="${Math.max(0,Y(0)-Y(p))}" fill="${col}"><title>${ord(i+1)}: ${(p*100).toFixed(1)}%</title></rect>`;
+    g+=`<text x="${cx}" y="${H-m.b+16}" text-anchor="middle">${i+1}</text>`;
+    if(p>=.02&&band>24)g+=`<text x="${cx}" y="${Y(p)-4}" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:11px">${Math.round(p*100)}</text>`;});
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('width',W);svg.setAttribute('height',H);svg.innerHTML=g;
+}
+function nice(max,min){const span=max-min||1,raw=span/5,p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p,step=(f<=1?1:f<=2?2:f<=5?5:10)*p,lo=Math.floor(min/step)*step,hi=Math.ceil(max/step)*step,t=[];for(let v=lo;v<=hi+1e-9;v+=step)t.push(+v.toFixed(6));return {lo,hi,t};}
+
+/* ---------- club ---------- */
+function drawTeam(){
+  const c=rowOf(CUR,team),best=Math.min(...S.slice(0,-1).map((_,si)=>{const r=rowOf(si,team);return r?r.pos:99;}));
+  const seasonsIn=S.filter((_,si)=>rowOf(si,team)).length,tiles=[];
+  if(c){const st=standing(CUR,c.P).find(r=>r.t===team),o=odds(st.g,st.p,CUR);
+    tiles.push([`${S[CUR]} so far`,ord(c.pos),`${c.P} games: ${c.W}W ${c.D}D ${c.L}L, ${c.Pts} pts`]);
+    tiles.push(['Top-four odds',pc(o.top4),`Clubs with ${st.p} pts after ${st.g} games`]);
+    tiles.push(['Bottom-three odds',pc(o.rel),'Same comparison']);}
+  else tiles.push([S[CUR],'Not in league','']);
+  tiles.push(['Seasons in the league',seasonsIn+'',`of ${S.length} since ${S[0]}`]);
+  tiles.push(['Best finish',best===99?'-':ord(best),'Completed seasons']);
+  $('tTiles').innerHTML=tiles.map(t=>`<div class="tile"><span class="k">${T[team]} &middot; ${t[0]}</span><span class="v">${t[1]}</span><span class="s">${t[2]}</span></div>`).join('');
+  drawTrj();drawHist();drawClubMgrs();chips();drawLine();
+}
+
+function drawTrj(){
+  const svg=$('trjSvg'),box=svg.parentElement,dm=dims(box),W=dm.W,H=dm.H||(W<560?480:540),tip=$('tipT');
+  const seas=[];for(let si=Math.max(0,CUR-9);si<=CUR;si++)seas.push(si);const n=seas.length;
+  const D_=seas.map(si=>{const r=rowOf(si,team),x=TRK[si+'|'+team],part=si===CUR,st=seasonTable(si);
+    return {si,r,part,net:netE(si,team),paid:x&&x.gross&&x.spend!==null?x.spend:null,got:x&&x.gross&&x.inc!==null?x.inc:null,gbp:x&&x.gbp,
+      pts:r?(part?Math.round(r.Pts/r.P*38):r.Pts):null,pos:r?r.pos:null,four:part?null:(st[3]?st[3].Pts:null),mm:mainMgr(si,team)};});
+  D_.forEach((d,i)=>{let sum=0,ok=true;for(let k=0;k<3;k++){const v=D_[i-k]?D_[i-k].net:null;if(v===null||v===undefined){ok=false;break;}sum+=v;}d.roll=ok?sum:null;});
+  const have=D_.filter(d=>d.r);
+  $('trjTitle').textContent=`${T[team]}: spending and results, ${S[seas[0]]} to ${S[CUR]}`;
+  if(!have.length){svg.innerHTML='';$('trjSum').textContent='This club has no league seasons in this period.';return;}
+  const done=D_.filter(d=>d.r&&!d.part&&d.net!==null);const l5=done.slice(-5),p5=done.slice(-10,-5).length>=3?done.slice(-10,-5):[];
+  const sumN=a=>a.reduce((x,y)=>x+y.net,0),avg=(a,k)=>a.reduce((x,y)=>x+y[k],0)/a.length;
+  $('trjSum').innerHTML=l5.length?`Last ${l5.length} completed seasons${p5.length?` against the ${p5.length} before`:''}: net spending <b>≈${mE(sumN(l5))}</b>${p5.length?` (was ≈${mE(sumN(p5))})`:''}, average points <b>${avg(l5,'pts').toFixed(0)}</b>${p5.length?` (was ${avg(p5,'pts').toFixed(0)})`:''}, average finish <b>${avg(l5,'pos').toFixed(1)}</b>${p5.length?` (was ${avg(p5,'pos').toFixed(1)})`:''}. Euros up to 2022-23; later seasons are pounds converted at ${FXR.toFixed(2)}. ${S[CUR]} is in progress: points are a 38-game pace and spending is the summer window only.`:'Not enough completed seasons with spending data for a comparison.';
+  const m={l:62,r:16,t:22,b:36},gap=44,ih=H-m.t-m.b-gap,hA=ih*.46,hB=ih*.54,iw=W-m.l-m.r,band=iw/n,cx=i=>m.l+band*(i+.5);
+  const nets=D_.flatMap(d=>[d.net,d.roll]).filter(v=>v!==null);const ar=nice(Math.max(50,...nets),Math.min(0,...nets));
+  const yA=v=>m.t+hA-(v-ar.lo)/(ar.hi-ar.lo)*hA;
+  const ptsAll=D_.flatMap(d=>[d.pts,d.four]).filter(v=>v!==null);const br=nice(Math.max(...ptsAll)+6,Math.max(0,Math.min(...ptsAll)-10));
+  const y0B=m.t+hA+gap,yB=v=>y0B+hB-(v-br.lo)/(br.hi-br.lo)*hB;let g='';
+  g+=`<text x="${m.l}" y="12" style="font-weight:700;fill:var(--ink)">Net transfer spending (≈€m)</text><text x="${m.l}" y="${y0B-10}" style="font-weight:700;fill:var(--ink)">League points</text>`;
+  ar.t.forEach(v=>{g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${yA(v)}" y2="${yA(v)}" stroke="${v===0?'var(--muted)':'var(--grid)'}"/><text x="${m.l-6}" y="${yA(v)+4}" text-anchor="end">${v}</text>`;});
+  br.t.forEach(v=>{g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${yB(v)}" y2="${yB(v)}" stroke="var(--grid)"/><text x="${m.l-6}" y="${yB(v)+4}" text-anchor="end">${v}</text>`;});
+  const bw=Math.min(36,band*.5);
+  D_.forEach((d,i)=>{if(d.net===null)return;const y=yA(d.net),z=yA(0);g+=`<rect x="${cx(i)-bw/2}" y="${Math.min(y,z)}" width="${bw}" height="${Math.max(1,Math.abs(z-y))}" fill="${d.net>=0?'var(--cur)':'#b9b9b9'}" opacity="${d.part?.45:1}"/>`;
+    g+=`<text x="${cx(i)}" y="${d.net>=0?y-4:y+12}" text-anchor="middle" style="fill:var(--ink);font-size:11px;font-weight:700">${Math.round(d.net)}</text>`;});
+  let dd='',pen=false;D_.forEach((d,i)=>{if(d.roll===null){pen=false;return;}dd+=(pen?'L':'M')+cx(i).toFixed(1)+' '+yA(d.roll).toFixed(1);pen=true;});
+  g+=`<path d="${dd}" fill="none" stroke="#111" stroke-width="2" stroke-dasharray="5 4"/>`;D_.forEach((d,i)=>{if(d.roll!==null)g+=`<circle cx="${cx(i)}" cy="${yA(d.roll)}" r="3" fill="#111"/>`;});
+  let fq='';pen=false;D_.forEach((d,i)=>{if(d.four===null){pen=false;return;}fq+=(pen?'L':'M')+cx(i).toFixed(1)+' '+yB(d.four).toFixed(1);pen=true;});
+  g+=`<path d="${fq}" fill="none" stroke="#e8a400" stroke-width="2" stroke-dasharray="2 4"/>`;
+  let pp='';pen=false;D_.forEach((d,i)=>{if(d.pts===null){pen=false;return;}pp+=(pen?'L':'M')+cx(i).toFixed(1)+' '+yB(d.pts).toFixed(1);pen=true;});
+  g+=`<path d="${pp}" fill="none" stroke="var(--cur)" stroke-width="3" stroke-linejoin="round"/>`;
+  D_.forEach((d,i)=>{if(d.pts===null)return;g+=`<circle cx="${cx(i)}" cy="${yB(d.pts)}" r="5.5" fill="${d.part?'#fff':'var(--cur)'}" stroke="var(--cur)" stroke-width="2.5"/><text x="${cx(i)}" y="${yB(d.pts)-11}" text-anchor="middle" style="fill:var(--ink);font-size:11px;font-weight:700">${d.pts}${d.part?'*':''}</text><text x="${cx(i)}" y="${yB(d.pts)+19}" text-anchor="middle" style="font-size:11px">${ord(d.pos)}</text>`;});
+  const rot_=band<54;D_.forEach((d,i)=>{const lab=rot_?S[d.si].slice(2):S[d.si];g+=`<text x="${cx(i)}" y="${H-m.b+16}" text-anchor="${rot_?'end':'middle'}" transform="rotate(${rot_?-40:0} ${cx(i)} ${H-m.b+16})" style="${d.part?'font-weight:700;fill:var(--ink)':''}">${lab}${d.part?' so far':''}</text>`;});
+  g+='<g id="hov"></g>';D_.forEach((d,i)=>{g+=`<rect class="col" data-i="${i}" x="${m.l+band*i}" y="${m.t-6}" width="${band}" height="${H-m.t-m.b+6}" fill="transparent"/>`;});
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('width',W);svg.setAttribute('height',H);svg.innerHTML=g;
+  const hov=svg.querySelector('#hov');
+  const show=i=>{const d=D_[i];hov.innerHTML=`<rect x="${m.l+band*i}" y="${m.t-6}" width="${band}" height="${H-m.t-m.b+6}" fill="var(--ink)" opacity=".06"/>`;
+    let t=`<b>${S[d.si]}${d.part?' (so far)':''}</b>`;
+    if(!d.r)t+='<div><span>Not in the league</span></div>';else{
+      t+=`<div><span>Finished</span><b>${ord(d.pos)}${d.part?' so far':''}</b></div><div><span>Points</span><b>${d.pts}${d.part?' (pace)':''}</b></div><div><span>Manager</span><b>${d.mm?d.mm.name:'-'}</b></div>`;
+      t+=d.net===null?'<div><span>Net spend</span><b>n/a</b></div>':`<div><span>Net spend</span><b>≈${mE(d.net)}</b></div>`;
+      if(d.paid!==null)t+=`<div><span>Paid</span><b>€${Math.round(d.paid)}m</b></div><div><span>Received</span><b>€${Math.round(d.got)}m</b></div>`;
+      if(d.roll!==null)t+=`<div><span>3-season net</span><b>≈${mE(d.roll)}</b></div>`;
+      if(d.four!==null)t+=`<div><span>4th place had</span><b>${d.four} pts</b></div>`;}
+    tip.innerHTML=t;tip.style.display='block';let left=cx(i)+band/2+8;if(left+tip.offsetWidth>box.clientWidth)left=cx(i)-band/2-tip.offsetWidth-8;tip.style.left=Math.max(0,left)+'px';tip.style.top='8px';};
+  svg.querySelectorAll('.col').forEach(r=>{r.addEventListener('pointerenter',()=>show(+r.dataset.i));r.addEventListener('pointermove',()=>show(+r.dataset.i));r.addEventListener('pointerdown',()=>show(+r.dataset.i));r.addEventListener('pointerleave',()=>{hov.innerHTML='';tip.style.display='none';});});
+}
+function drawClubMgrs(){
+  $('cmTitle').textContent='Managers at '+T[team];
+  const ids=MG.filter(g=>g.club===team&&TS[g.i]).sort((a,b)=>a.from<b.from?1:-1);
+  let h='<thead><tr><th class="l">Manager</th><th class="l">From</th><th class="l">To</th><th>Games</th><th>W</th><th>D</th><th>L</th><th>Pts/g</th><th>Win %</th></tr></thead><tbody>';
+  ids.forEach(g=>{const o=TS[g.i];const to=g.until>'9000'?'Present':dt(g.until),fr=g.from<'2007-07-01'?'Before 2007':dt(g.from);
+    h+=`<tr class="${g.until>'9000'?'sel':''}"><td class="l">${g.name}${g.care?' <span class="zero">(caretaker)</span>':''}</td><td class="l">${fr}</td><td class="l">${to}</td><td>${o.g}</td><td>${o.w}</td><td>${o.d}</td><td>${o.l}</td><td><b>${((o.w*3+o.d)/o.g).toFixed(2)}</b></td><td>${Math.round(o.w/o.g*100)}%</td></tr>`;});
+  $('cmTable').innerHTML=h+(ids.length?'':'<tr><td class="l">No league games recorded for this club since 2007-08.</td></tr>')+'</tbody>';
+}
+function drawHist(){
+  let h='<thead><tr><th class="l">Season</th><th class="l">Manager</th><th>Pos</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th>Pts/g</th><th>Net spend</th><th>Spent</th><th>Sold</th><th>Yel</th><th>Red</th></tr></thead><tbody>';
+  let any=false;
+  for(let si=S.length-1;si>=0;si--){const r=rowOf(si,team);if(!r)continue;any=true;
+    const mm=mainMgr(si,team),tk=TRK[si+'|'+team],sy=sym(si,team);
+    h+=`<tr class="${si===CUR?'sel':''}"><td class="l">${S[si]}${si===CUR?' (so far)':''}</td><td class="l">${mm?mm.name:'-'}${mm&&mm.others.length?` <span class="zero" title="${mm.others.join(', ')}">+${mm.others.length}</span>`:''}</td><td>${ord(r.pos)}</td><td>${r.P}</td><td>${r.W}</td><td>${r.D}</td><td>${r.L}</td><td>${r.GF}</td><td>${r.GA}</td><td>${sgn(r.GD)}</td><td><b>${r.Pts}</b>${r.ded?'<sup title="points deducted">*</sup>':''}</td><td>${(r.Pts/r.P).toFixed(2)}</td><td>${tk&&tk.net!==null?'<b>'+mny(tk.net,sy)+'</b>':mfmt(null)}</td><td>${tk&&tk.spend!==null?mny(tk.spend,sy):mfmt(null)}</td><td>${tk&&tk.inc!==null?mny(tk.inc,sy):mfmt(null)}</td><td>${r.cd===r.P?r.Y:'<span class="zero">&ndash;</span>'}</td><td>${r.cd===r.P?r.R:'<span class="zero">&ndash;</span>'}</td></tr>`;}
+  $('histTable').innerHTML=h+(any?'':'<tr><td class="l">No league seasons.</td></tr>')+'</tbody>';
+}
+/* progression chart */
+let shown=new Set(),shownTeam=-1,showAvg=true,hoverN=null,hoverS=null;
+function seasonCol(si){return si===CUR?'var(--cur)':`hsl(${Math.round((si*137.508)%360)} 58% 42%)`;}
+function cumFor(t,si){const g=teamGames(t,si);let p=0,gf=0,ga=0,y=0,r=0;const o={pts:[],gf:[],ga:[],gd:[],y:[],r:[]};
+  g.forEach(x=>{p+=x.gf>x.ga?3:x.gf===x.ga?1:0;gf+=x.gf;ga+=x.ga;o.pts.push(p);o.gf.push(gf);o.ga.push(ga);o.gd.push(gf-ga);if(x.y!==null){y+=x.y;r+=x.r;o.y.push(y);o.r.push(r);}});return o;}
+let cumCache={};
+function teamSeasons(){return S.map((_,si)=>si).filter(si=>rowOf(si,team));}
+function chips(){
+  const list=teamSeasons();
+  if(shownTeam!==team){shown=new Set(list.slice(-10));shownTeam=team;}
+  $('seasonChips').innerHTML=list.map(si=>`<button class="chip" data-s="${si}" aria-pressed="${shown.has(si)}"><i style="background:${seasonCol(si)}"></i>${S[si]}</button>`).join('');
+  $('seasonChips').querySelectorAll('.chip').forEach(b=>{const si=+b.dataset.s;
+    b.addEventListener('click',()=>{shown.has(si)?shown.delete(si):shown.add(si);chips();drawLine();});
+    b.addEventListener('mouseenter',()=>{hoverS=si;drawLine();});b.addEventListener('mouseleave',()=>{hoverS=null;drawLine();});});
+  $('avgBtn').setAttribute('aria-pressed',showAvg);
+}
+const lastN=n=>()=>{shown=new Set(teamSeasons().slice(-n));chips();drawLine();};
+$('selAll').onclick=lastN(99);$('selLast10').onclick=lastN(10);$('selLast5').onclick=lastN(5);$('selNone').onclick=()=>{shown=new Set();chips();drawLine();};
+$('avgBtn').onclick=()=>{showAvg=!showAvg;chips();drawLine();};$('metric').onchange=()=>drawLine();
+const MLAB={pts:'Points',gf:'Goals scored',ga:'Goals conceded',gd:'Goal difference',y:'Yellow cards',r:'Red cards'};
+function drawLine(){
+  const key=$('metric').value,box=$('lineBox'),svg=$('lineSvg'),dm=dims(box),W=dm.W,H=dm.H||(W<560?320:420);
+  const m={l:46,r:16,t:12,b:38},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const list=teamSeasons().filter(si=>shown.has(si)), done=teamSeasons().filter(si=>si!==CUR&&MS[si].length>=38);
+  const cum={};teamSeasons().forEach(si=>cum[si]=cumFor(team,si));
+  const avg=showAvg?Array.from({length:38},(_,i)=>{const v=done.map(si=>cum[si][key][i]).filter(x=>x!==undefined);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;}):null;
+  let mx=-1e9,mn=1e9;list.forEach(si=>cum[si][key].forEach(v=>{mx=Math.max(mx,v);mn=Math.min(mn,v);}));if(avg)avg.forEach(v=>{if(v!==null){mx=Math.max(mx,v);mn=Math.min(mn,v);}});
+  if(mx<mn){mx=10;mn=0;}mn=Math.min(mn,0);const sc=nice(mx,mn);
+  const X=i=>m.l+i/38*iw,Y=v=>m.t+ih-(v-sc.lo)/(sc.hi-sc.lo)*ih;let g='';
+  sc.t.forEach(v=>{g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l-8}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;});
+  [0,5,10,15,20,25,30,35,38].forEach(i=>{g+=`<text x="${X(i)}" y="${H-m.b+18}" text-anchor="middle">${i}</text>`;});
+  g+=`<text x="${m.l+iw/2}" y="${H-4}" text-anchor="middle">Games played</text>`;
+  if(avg){const d=avg.map((v,i)=>v===null?null:[X(i+1),Y(v)]).filter(Boolean).map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join('');g+=`<path d="${d}" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-dasharray="5 4" stroke-opacity=".8"/>`;}
+  list.forEach(si=>{const v=cum[si][key];if(!v.length)return;const q=v.map((y,i)=>[X(i+1),Y(y)]),d=q.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(''),e=q[q.length-1],th=si===CUR,op=hoverS!==null&&hoverS!==si?.12:1;
+    g+=`<path d="${d}" fill="none" stroke="${seasonCol(si)}" stroke-width="${th||hoverS===si?3.4:1.8}" stroke-linejoin="round" opacity="${op}"/><circle cx="${e[0]}" cy="${e[1]}" r="${th?5:3.2}" fill="${seasonCol(si)}" opacity="${op}"/>`;});
+  if(hoverN!==null){g+=`<line x1="${X(hoverN)}" x2="${X(hoverN)}" y1="${m.t}" y2="${m.t+ih}" stroke="var(--ink)" stroke-opacity=".35"/>`;list.forEach(si=>{const v=cum[si][key][hoverN-1];if(v!==undefined)g+=`<circle cx="${X(hoverN)}" cy="${Y(v)}" r="4" fill="${seasonCol(si)}" stroke="#fff" stroke-width="1.5"/>`;});}
+  g+=`<rect id="hit" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" style="cursor:crosshair"/>`;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('width',W);svg.setAttribute('height',H);svg.innerHTML=g;
+  const hit=svg.querySelector('#hit'),tip=$('tip');
+  const move=ev=>{const r=svg.getBoundingClientRect(),px=((fullCard&&rot)?(ev.clientY-r.top):(ev.clientX-r.left))-m.l,n=Math.max(1,Math.min(38,Math.round(px/iw*38)));if(n===hoverN)return;hoverN=n;
+    const rows=list.map(si=>({si,v:cum[si][key][n-1]})).filter(x=>x.v!==undefined).sort((a,b)=>b.v-a.v);
+    let t=`<b>After game ${n}</b>`;rows.forEach(x=>{t+=`<div><span><i class="dot" style="background:${seasonCol(x.si)}"></i>${S[x.si]}</span><b>${key==='gd'?sgn(x.v):x.v}</b></div>`;});
+    if(avg&&avg[n-1]!==null)t+=`<div style="opacity:.8"><span>Average</span><b>${avg[n-1].toFixed(1)}</b></div>`;
+    tip.innerHTML=t;tip.style.display='block';let left=X(n)+14;if(left+tip.offsetWidth>box.clientWidth)left=X(n)-tip.offsetWidth-14;tip.style.left=Math.max(0,left)+'px';tip.style.top='8px';keep();};
+  hit.addEventListener('pointermove',move);hit.addEventListener('pointerdown',move);hit.addEventListener('pointerleave',()=>{hoverN=null;tip.style.display='none';keep();});
+  $('lineNote').textContent=`${MLAB[key]}, running total by games played for ${T[team]}. Dashed line is the average of ${done.length} completed seasons.${key==='y'||key==='r'?' Card data starts in 2010-11.':''}`;
+}
+let busy=false;function keep(){if(busy)return;busy=true;const t=$('tip'),h=t.innerHTML,d=t.style.display,l=t.style.left,tp=t.style.top;drawLine();const t2=$('tip');t2.innerHTML=h;t2.style.display=d;t2.style.left=l;t2.style.top=tp;busy=false;}
+
+/* ---------- seasons ---------- */
+function drawSeasons(){
+  const si=+$('seasonSel').value,rows=seasonTable(si);
+  let h='<thead><tr><th>Pos</th><th class="l">Club</th><th class="l">Manager</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th>Net spend</th><th>Yel</th><th>Red</th></tr></thead><tbody>';
+  rows.forEach(o=>{const cards=o.cd===o.P,mm=mainMgr(si,o.t),tk=TRK[si+'|'+o.t];
+    h+=`<tr class="row ${o.t===team?'sel':''} ${o.pos<=4?'zone4':o.pos>=18?'zonerel':''}" data-t="${o.t}"><td>${o.pos}</td><td class="l">${T[o.t]}</td><td class="l">${mm?mm.name:'-'}${mm&&mm.others.length?` <span class="zero" title="${mm.others.join(', ')}">+${mm.others.length}</span>`:''}</td><td>${o.P}</td><td>${o.W}</td><td>${o.D}</td><td>${o.L}</td><td>${o.GF}</td><td>${o.GA}</td><td>${sgn(o.GD)}</td><td><b>${o.Pts}</b>${o.ded?'<sup title="points deducted">*</sup>':''}</td><td>${tk&&tk.net!==null?mny(tk.net,tk.gbp?'£':'€'):mfmt(null)}</td><td>${cards?o.Y:'<span class="zero">&ndash;</span>'}</td><td>${cards?o.R:'<span class="zero">&ndash;</span>'}</td></tr>`;});
+  $('seasonTable').innerHTML=h+'</tbody>';
+  $('seasonTable').querySelectorAll('tr.row').forEach(tr=>tr.addEventListener('click',()=>pick(+tr.dataset.t)));
+  const ded=rows.filter(o=>o.ded).map(o=>`${T[o.t]} (${o.ded} points deducted)`);
+  $('seasonNote').textContent=(si===CUR?'In progress: positions after games played so far. ':'')+(ded.length?'* '+ded.join(', ')+'. ':'')+'Managers: the one with most games that season, +N for others used (hover for names). Net spend is in euros up to 2022-23 and pounds after, for the current clubs only. Click a club to follow it.';
+  needChart();
+}
+function needChart(){
+  const svg=$('needSvg'),dm=dims(svg.parentElement),W=dm.W,H=dm.H||320,m={l:40,r:12,t:12,b:34},iw=W-m.l-m.r,ih=H-m.t-m.b,n=S.length-1;
+  const ser=[[0,'#d29a00'],[3,'var(--cur)'],[16,'var(--bad)']].map(([k,c])=>({k,c,v:S.slice(0,-1).map((_,si)=>seasonTable(si)[k].Pts)}));
+  const all=ser.flatMap(s=>s.v);
+  const sc=nice(Math.max(...all)+3,Math.min(...all)-3),X=i=>m.l+(i+.5)/S.length*iw,Y=v=>m.t+ih-(v-sc.lo)/(sc.hi-sc.lo)*ih;let g='';
+  sc.t.forEach(v=>{g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l-6}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;});
+  const rot_=iw/S.length<46;S.forEach((s,i)=>{g+=`<text x="${X(i)}" y="${H-m.b+16}" text-anchor="${rot_?'end':'middle'}" transform="rotate(${rot_?-40:0} ${X(i)} ${H-m.b+16})">${rot_?s.slice(2):s}</text>`;});
+  ser.forEach(s=>{const d=s.v.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join('');g+=`<path d="${d}" fill="none" stroke="${s.c}" stroke-width="2"/>`;
+    s.v.forEach((v,i)=>{g+=`<circle cx="${X(i)}" cy="${Y(v)}" r="3" fill="${s.c}"><title>${S[i]}: ${v} pts</title></circle>`;});
+  });
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('width',W);svg.setAttribute('height',H);svg.innerHTML=g;
+}
+
+/* ---------- matches ---------- */
+function fillMSeason(){$('mSeason').innerHTML='<option value="-1">All seasons</option>'+S.map((s,i)=>`<option value="${i}">${s}</option>`).reverse().join('');$('mSeason').value=CUR;}
+['mTeam','mSeason','mRes','mVenue'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='mTeam'){team=+$('mTeam').value>=0?+$('mTeam').value:team;if(+$('mTeam').value>=0)$('teamSel').value=team;}drawMatches();}));
+$('mOpp').addEventListener('input',drawMatches);
+const cc=(n,t)=>n===null?'<span class="zero">&ndash;</span>':n?`<span class="cardicon ${t}"></span>${n}`:'<span class="zero">0</span>';
+function drawMatches(){
+  const t=+$('mTeam').value,si=+$('mSeason').value,rs=$('mRes').value,vn=$('mVenue').value,op=$('mOpp').value.trim().toLowerCase();
+  let rows=M.filter(m=>(si<0||m.s===si)&&(t<0||m.h===t||m.a===t));
+  if(t>=0){rows=rows.filter(m=>(!rs||res(m,t)===rs)&&(!vn||(vn==='H')===(m.h===t))&&(!op||T[m.h===t?m.a:m.h].toLowerCase().includes(op)));}
+  else if(op)rows=rows.filter(m=>T[m.h].toLowerCase().includes(op)||T[m.a].toLowerCase().includes(op));
+  rows=rows.slice().sort((a,b)=>a.d<b.d?1:-1);
+  let w=0,d=0,l=0,gf=0,ga=0;if(t>=0)rows.forEach(m=>{const r=res(m,t);r==='W'?w++:r==='D'?d++:l++;const own=m.h===t;gf+=own?m.hg:m.ag;ga+=own?m.ag:m.hg;});
+  $('mSummary').innerHTML=`<span><b>${rows.length}</b> matches</span>`+(t>=0?`<span><b>${w}</b>W <b>${d}</b>D <b>${l}</b>L</span><span>Goals <b>${gf}-${ga}</b></span>`:'');
+  const shown_=rows.slice(0,400);
+  let h='<thead><tr><th class="l">Date</th><th class="l">Season</th><th class="l">Home</th><th>Score</th><th class="l">Away</th>'+(t>=0?'<th>Result</th>':'')+'<th>Home yel</th><th>Away yel</th><th>Home red</th><th>Away red</th></tr></thead><tbody>';
+  shown_.forEach(m=>{const r=t>=0?res(m,t):'';h+=`<tr><td class="l">${dt(m.d)}</td><td class="l">${S[m.s]}</td><td class="l">${m.h===t?'<b>'+T[m.h]+'</b>':T[m.h]}</td><td><b>${m.hg}-${m.ag}</b></td><td class="l">${m.a===t?'<b>'+T[m.a]+'</b>':T[m.a]}</td>${t>=0?`<td><span class="pill ${r}">${r}</span></td>`:''}<td>${cc(m.hy,'y')}</td><td>${cc(m.ay,'y')}</td><td>${cc(m.hr,'r')}</td><td>${cc(m.ar,'r')}</td></tr>`;});
+  if(!rows.length)h+='<tr><td class="l" colspan="10">No matches fit these filters.</td></tr>';
+  if(rows.length>400)h+='<tr><td class="l" colspan="10">Showing the latest 400 of '+rows.length+'. Narrow the filters to see the rest.</td></tr>';
+  $('matchTable').innerHTML=h+'</tbody>';
+}
+
+
+/* ---------- money ---------- */
+const FXR=D.fx||1.19;
+const netE=(si,t)=>{const x=TRK[si+'|'+t];return x&&x.net!==null?(x.gbp?x.net*FXR:x.net):null;};
+const LASTFULL=S.indexOf('2022-23');
+$('moEnd').innerHTML=S.map((s,i)=>i>=1&&i<=CUR?`<option value="${i}">${s}${i===CUR?' (so far, summer window only)':i>LASTFULL?' (current clubs only)':''}</option>`:'').filter(Boolean).reverse().join('');$('moEnd').value=LASTFULL;
+$('moEnd').addEventListener('change',drawMoney);$('moYears').addEventListener('change',drawMoney);
+const mE=v=>(v<-0.5?'&minus;':'')+'€'+Math.abs(Math.round(v))+'m';
+function windowRows(end,N){
+  const s0=end-N+1,base=s0-1;if(base<0)return {rows:[],s0,base};
+  const rows=[];
+  T.forEach((_,t)=>{
+    let ok=true,spend=0,gs=0,gi=0,gross=true;
+    for(let si=base;si<=end;si++){if(!rowOf(si,t)){ok=false;break;}}
+    if(!ok)return;
+    for(let si=s0;si<=end;si++){const v=netE(si,t);if(v===null){ok=false;break;}spend+=v;const x=TRK[si+'|'+t];if(x&&x.gross&&x.spend!==null){gs+=x.spend;gi+=x.inc;}else gross=false;}
+    if(!ok)return;
+    const b=rowOf(base,t),e=rowOf(end,t);
+    const part=end===CUR,aft=part?Math.round(e.Pts/e.P*38):e.Pts;
+    rows.push({t,spend,gs:gross?gs:null,gi:gross?gi:null,before:b.Pts,after:aft,delta:aft-b.Pts,fb:b.pos,fa:e.pos,part,played:e.P});
+  });
+  [...rows].sort((a,b)=>b.spend-a.spend).forEach((r,i)=>r.rank=i+1);
+  const med=rows.length?[...rows].map(r=>r.spend).sort((a,b)=>a-b)[Math.floor(rows.length/2)]:0;
+  rows.forEach(r=>{r.hi=r.spend>=med;
+    r.verdict=r.hi?(r.delta>=8?['W','Helped']:r.delta<=-8?['L','Did not help']:['D','Little change']):(r.delta>=8?['W','Improved, low spend']:r.delta<=-8?['L','Declined, low spend']:['D','Little change']);});
+  return {rows,s0,base,med};
+}
+function drawMoney(){
+  const end=+$('moEnd').value,N=+$('moYears').value,{rows,s0,base}=windowRows(end,N);
+  const span=N===1?S[end]:`${S[s0]} to ${S[end]}`;
+  const part=end>LASTFULL;
+  $('moNote').innerHTML=`Spending: net fees across ${N===1?'the summer and winter windows of '+S[end]:'all windows from '+S[s0]+' to '+S[end]}. Compared with points in ${S[base]}. ${end===CUR?'2026-27 is in progress: points are shown as a 38-game pace (points so far divided by games played, times 38), and spending is the summer 2026 window only, so treat verdicts as early. ':''}${part?'Seasons after 2022-23 only have net spending for clubs now in the league, in pounds, converted to euros at about '+FXR.toFixed(2)+' per pound. ':'Euros, disclosed fees only. '}Only clubs in the league for every season from ${S[base]} to ${S[end]} are compared (${rows.length} clubs).`;
+  $('moTitle').textContent=`Club by club: ${span}${end===CUR?' (so far)':''}`;
+  const me=rows.find(r=>r.t===team);
+  if(me){
+    const v=me.verdict[1],cls=me.hi;
+    const txt=me.hi?(me.delta>=8?'So the spending helped.':me.delta<=-8?'So the spending did not help.':'So the spending did not change much.'):(me.delta>=8?'It improved without big spending.':me.delta<=-8?'It declined, and it did not spend much.':'Little changed, and it did not spend much.');
+    $('moHeadTitle').textContent=T[team];
+    $('moHead').innerHTML=`${T[team]} ${me.spend<0?`took in a net <b>≈${mE(-me.spend)}</b> from transfers`:`spent a net <b>≈${mE(me.spend)}</b>`} over ${span}${me.gs!==null?` (paid ${mE(me.gs)}, received ${mE(me.gi)})`:''}, ${ord(me.rank)} highest net spend of ${rows.length} clubs. Points went from <b>${me.before}</b> in ${S[base]} to <b>${me.after}</b>${me.part?` (a pace after ${me.played} games)`:''} in ${S[end]} (<b>${sgn(me.delta)}</b>), and the club moved from ${ord(me.fb)} to ${ord(me.fa)}${me.part?' so far':''}. ${txt}`;
+  }else{
+    $('moHeadTitle').textContent=T[team];
+    $('moHead').textContent=`${T[team]} cannot be compared for ${span}: it needs to be in the Premier League for every season from ${S[base]} to ${S[end]} with spending data${part?' (after 2022-23 only clubs now in the league have it)':''}. Try a different window or pick another club.`;
+  }
+  const top=[...rows].sort((a,b)=>a.rank-b.rank).slice(0,5),rest=rows.filter(r=>r.rank>5);
+  const av=a=>a.length?a.reduce((x,y)=>x+y.delta,0)/a.length:0;
+  const tiles=[['Biggest 5 spenders',sgn(+av(top).toFixed(1))+' pts','Average change in points'],['All other clubs',sgn(+av(rest).toFixed(1))+' pts','Average change in points'],['Big spenders who improved',top.filter(r=>r.delta>0).length+' of '+top.length,'Top 5 by net spending'],['Clubs compared',rows.length+'','in the league the whole time']];
+  $('moTiles').innerHTML=tiles.map(t=>`<div class="tile"><span class="k">${t[0]}</span><span class="v">${t[1]}</span><span class="s">${t[2]}</span></div>`).join('');
+  const maxS=Math.max(1,...rows.map(r=>Math.abs(r.spend))),maxD=Math.max(10,...rows.map(r=>Math.abs(r.delta)));
+  let h='<thead><tr><th>Spend rank</th><th class="l">Club</th><th class="l" style="min-width:170px">Net spend</th>'+(rows.length&&rows[0].gs!==null?'<th>Paid</th><th>Received</th>':'')+'<th>Points before</th><th>Points after</th><th class="l" style="min-width:190px">Change in points</th><th class="l">Verdict</th></tr></thead><tbody>';
+  [...rows].sort((a,b)=>a.rank-b.rank).forEach(r=>{
+    const sw=Math.round(Math.abs(r.spend)/maxS*90),dw=Math.round(Math.abs(r.delta)/maxD*80);
+    h+=`<tr class="row ${r.t===team?'sel':''}" data-t="${r.t}"><td>${r.rank}</td><td class="l">${T[r.t]}</td><td class="l"><span class="bar" style="width:${sw}px;${r.spend<0?'background:var(--gray)':''}"></span> ${mE(r.spend)}</td>${r.gs!==null?`<td>${mE(r.gs)}</td><td>${mE(r.gi)}</td>`:(rows[0]&&rows[0].gs!==null?'<td></td><td></td>':'')}<td>${r.before}</td><td>${r.after}${r.part?'*':''}</td><td class="l"><span style="display:inline-block;width:82px;text-align:right">${r.delta<0?`<span class="bar" style="width:${dw}px;background:var(--bad)"></span>`:''}</span><span style="display:inline-block;width:82px">${r.delta>0?`<span class="bar" style="width:${dw}px;background:var(--good)"></span>`:''}</span> <b>${sgn(r.delta)}</b></td><td class="l"><span class="pill ${r.verdict[0]}" style="white-space:nowrap">${r.verdict[1]}</span></td></tr>`;});
+  $('moTable').innerHTML=h+'</tbody>';
+  $('moTable').querySelectorAll('tr.row').forEach(tr=>tr.addEventListener('click',()=>pick(+tr.dataset.t)));
+  dumbbell(end);bands();bestWorst();
+}
+function dumbbell(si){
+  const {rows}=moneyRows(si),svg=$('dbSvg'),dm=dims(svg.parentElement),W=dm.W,n=rows.length;
+  $('dbTitle').textContent=`Spending rank against finishing rank, ${S[si]}`;
+  if(n<4){svg.innerHTML='';return;}
+  const m={l:W<520?110:150,r:24,t:40,b:16},H=dm.H||Math.max(280,n*26+m.t+m.b),rowH=(H-m.t-m.b)/n,iw=W-m.l-m.r,X=r=>m.l+(r-1)/(n-1)*iw;
+  let g=`<text x="${m.l}" y="14" style="font-weight:700;fill:var(--ink)">1st</text><text x="${W-m.r}" y="14" text-anchor="end" style="font-weight:700;fill:var(--ink)">${ord(n)}</text><text x="${m.l+iw/2}" y="14" text-anchor="middle">Rank (1st = biggest spender / best finish)</text>`;
+  [1,Math.round(n/4),Math.round(n/2),Math.round(3*n/4),n].forEach(r=>{g+=`<line x1="${X(r)}" x2="${X(r)}" y1="${m.t-6}" y2="${H-m.b}" stroke="var(--grid)"/><text x="${X(r)}" y="${m.t-12}" text-anchor="middle">${r}</text>`;});
+  [...rows].sort((a,b)=>a.spendRank-b.spendRank).forEach((o,i)=>{const y=m.t+i*rowH+rowH/2,sel=o.t===team,c=o.posRank<o.spendRank?'var(--good)':o.posRank>o.spendRank?'var(--bad)':'var(--gray)';
+    g+=`<text x="${m.l-10}" y="${y+4}" text-anchor="end" style="fill:var(--ink);font-weight:${sel?700:400}">${T[o.t]}</text>`;
+    g+=`<line x1="${X(o.spendRank)}" x2="${X(o.posRank)}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="3" opacity=".8"/>`;
+    g+=`<circle cx="${X(o.spendRank)}" cy="${y}" r="5" fill="#fff" stroke="#8a8a8a" stroke-width="2"><title>${T[o.t]}: spending rank ${o.spendRank}</title></circle><circle cx="${X(o.posRank)}" cy="${y}" r="${sel?7:5.5}" fill="var(--cur)"><title>${T[o.t]}: finished ${ord(o.pos)} (rank ${o.posRank} of the clubs shown)</title></circle>`;});
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('width',W);svg.setAttribute('height',H);svg.innerHTML=g;
+}
+$('bandBy').addEventListener('change',bands);
+function bands(){
+  const by=$('bandBy').value,acc=[0,1,2,3,4].map(()=>({n:0,pos:0,pts:0,t4:0,rel:0,t1:0}));
+  S.forEach((_,si)=>{if(si>LASTFULL)return;const {rows}=moneyRows(si);const rk=[...rows].sort((a,b)=>(by==='gross'?b.tr.spend-a.tr.spend:b.tr.net-a.tr.net));rk.forEach((o,i)=>{o.bandRank=i+1;});rows.forEach(o=>{const b=Math.min(4,Math.floor((o.bandRank-1)/4)),a=acc[b];a.n++;a.pos+=o.pos;a.pts+=o.Pts;if(o.pos<=4)a.t4++;if(o.pos>=18)a.rel++;if(o.pos===1)a.t1++;});});
+  const lab=['Biggest 4 spenders (rank 1-4)','Next 4 (5-8)','Middle 4 (9-12)','Next 4 (13-16)','Smallest 4 (17-20)'];
+  let h='<thead><tr><th class="l">Spending that season</th><th>Club-seasons</th><th>Average finish</th><th>Average points</th><th>Won the title</th><th>Top four</th><th>Bottom three</th></tr></thead><tbody>';
+  acc.forEach((a,i)=>{h+=`<tr><td class="l">${lab[i]}</td><td>${a.n}</td><td><b>${(a.pos/a.n).toFixed(1)}</b></td><td>${(a.pts/a.n).toFixed(1)}</td><td>${Math.round(a.t1/a.n*100)}%</td><td><span class="bar" style="width:${Math.round(a.t4/a.n*80)}px"></span> ${Math.round(a.t4/a.n*100)}%</td><td><span class="bar rel" style="width:${Math.round(a.rel/a.n*80)}px"></span> ${Math.round(a.rel/a.n*100)}%</td></tr>`;});
+  $('bandTable').innerHTML=h+'</tbody>';
+}
+function bestWorst(){
+  const all=[];S.forEach((_,si)=>{if(si>LASTFULL)return;moneyRows(si).rows.forEach(o=>all.push({si,o}));});
+  const mk=list=>{let h='<thead><tr><th class="l">Season</th><th class="l">Club</th><th>Net spend</th><th>Spend rank</th><th>Finish</th></tr></thead><tbody>';
+    list.forEach(x=>{h+=`<tr class="row" data-t="${x.o.t}"><td class="l">${S[x.si]}</td><td class="l">${T[x.o.t]}</td><td>${mny(x.o.tr.net,'€')}</td><td>${x.o.spendRank}</td><td><b>${x.o.pos}</b></td></tr>`;});return h+'</tbody>';};
+  const up=[...all].sort((a,b)=>(b.o.spendRank-b.o.pos)-(a.o.spendRank-a.o.pos)||a.o.pos-b.o.pos).slice(0,10),down=[...all].sort((a,b)=>(a.o.spendRank-a.o.pos)-(b.o.spendRank-b.o.pos)||b.o.pos-a.o.pos).slice(0,10);
+  $('bestTable').innerHTML=mk(up);$('worstTable').innerHTML=mk(down);
+  [$('bestTable'),$('worstTable')].forEach(t=>t.querySelectorAll('tr.row').forEach(tr=>tr.addEventListener('click',()=>pick(+tr.dataset.t))));
+}
+
+/* ---------- managers ---------- */
+let mgCare=false;
+const PS={};
+MG.forEach(g=>{const o=TS[g.i];if(!o)return;const p=PS[g.name]||(PS[g.name]={name:g.name,g:0,w:0,d:0,l:0,gf:0,ga:0,clubs:new Set(),spells:[],care:true});p.g+=o.g;p.w+=o.w;p.d+=o.d;p.l+=o.l;p.gf+=o.gf;p.ga+=o.ga;p.clubs.add(T[g.club]);p.spells.push({g,o});if(!g.care)p.care=false;});
+$('mgMin').addEventListener('input',()=>drawMgrs());$('mgSearch').addEventListener('input',()=>drawMgrs());
+$('mgCare').onclick=()=>{mgCare=!mgCare;$('mgCare').setAttribute('aria-pressed',mgCare);drawMgrs();};
+let mgSort={k:'ppg',dir:-1},mgOpen=null;
+function drawMgrs(){
+  const min=+$('mgMin').value,q=$('mgSearch').value.trim().toLowerCase();$('mgMinV').textContent=min;
+  let list=Object.values(PS).filter(p=>p.g>=min&&(mgCare||!p.care)&&(!q||p.name.toLowerCase().includes(q)||[...p.clubs].some(c=>c.toLowerCase().includes(q)))).map(p=>({...p,ppg:(p.w*3+p.d)/p.g,win:p.w/p.g,gd:(p.gf-p.ga)/p.g}));
+  const k=mgSort.k;list.sort((a,b)=>{const x=k==='name'?a.name:a[k],y=k==='name'?b.name:b[k];return (x<y?-1:x>y?1:0)*mgSort.dir;});
+  const cols=[['name','Manager','l'],['clubs','Clubs','l'],['g','Games'],['w','W'],['d','D'],['l','L'],['ppg','Pts/g'],['win','Win %'],['gd','Goal diff/g']];
+  let h='<thead><tr>'+cols.map(([key,lab,cl])=>`<th class="s ${cl||''}" data-k="${key}" ${key===k?`aria-sort="${mgSort.dir>0?'ascending':'descending'}"`:''}>${lab}</th>`).join('')+'</tr></thead><tbody>';
+  list.slice(0,300).forEach((p,i)=>{h+=`<tr class="row ${mgOpen===p.name?'sel':''}" data-n="${p.name.replace(/"/g,'&quot;')}"><td class="l">${p.name}${p.care?' <span class="zero">(caretaker)</span>':''}</td><td class="l" style="white-space:normal;min-width:180px;max-width:300px">${[...p.clubs].join(', ')}</td><td>${p.g}</td><td>${p.w}</td><td>${p.d}</td><td>${p.l}</td><td><b>${p.ppg.toFixed(2)}</b></td><td>${Math.round(p.win*100)}%</td><td>${sgn(+p.gd.toFixed(2))}</td></tr>`;
+    if(mgOpen===p.name){h+=`<tr class="detail"><td colspan="9" class="l" style="white-space:normal;background:var(--soft)">${p.spells.sort((a,b)=>a.g.from<b.g.from?-1:1).map(s=>`${T[s.g.club]}: ${s.g.from<'2007-07-01'?'before 2007':dt(s.g.from)} to ${s.g.until>'9000'?'present':dt(s.g.until)}, ${s.o.g} games, ${((s.o.w*3+s.o.d)/s.o.g).toFixed(2)} pts/g`).join('<br>')}</td></tr>`;}});
+  $('mgTable').innerHTML=h+(list.length?'':'<tr><td class="l" colspan="9">No managers fit these filters.</td></tr>')+'</tbody>';
+  $('mgTable').querySelectorAll('th.s').forEach(th=>th.addEventListener('click',()=>{const key=th.dataset.k;mgSort=mgSort.k===key?{k:key,dir:-mgSort.dir}:{k:key,dir:key==='name'||key==='clubs'?1:-1};drawMgrs();}));
+  $('mgTable').querySelectorAll('tr.row').forEach(tr=>tr.addEventListener('click',()=>{const n=tr.dataset.n;mgOpen=mgOpen===n?null:n;drawMgrs();}));
+  mgTiles(list);changes();bounce();
+}
+function mgTiles(list){
+  const perm=Object.values(PS).filter(p=>!p.care&&p.g>=100).map(p=>({...p,ppg:(p.w*3+p.d)/p.g})).sort((a,b)=>b.ppg-a.ppg);
+  const longest=MG.filter(g=>TS[g.i]).sort((a,b)=>TS[b.i].g-TS[a.i].g)[0];
+  const cur=MG.filter(g=>g.until>'9000'&&!g.care&&curSet.has(g.club));
+  const newest=cur.sort((a,b)=>a.from<b.from?1:-1)[0],oldest=cur.sort((a,b)=>a.from<b.from?-1:1)[0];
+  const tiles=[['Best points per game',perm[0].ppg.toFixed(2),perm[0].name+', min 100 games'],['Most league games in one spell',TS[longest.i].g+'',`${longest.name}, ${T[longest.club]}`],['Longest-serving now',oldest.name,`${T[oldest.club]}, since ${dt(oldest.from)}`],['Newest appointment',newest.name,`${T[newest.club]}, ${dt(newest.from)}`],['Managers in the data',Object.keys(PS).length+'','since 2007-08, incl. caretakers']];
+  $('mgTiles').innerHTML=tiles.map(t=>`<div class="tile"><span class="k">${t[0]}</span><span class="v" style="font-size:${t[1].length>10?'20px':'32px'}">${t[1]}</span><span class="s">${t[2]}</span></div>`).join('');
+}
+function changes(){
+  let h='<thead><tr><th class="l">Season</th><th>Managers used</th><th>Mid-season changes</th><th>Caretaker spells</th><th class="l">Clubs that changed mid-season</th></tr></thead><tbody>';
+  for(let si=S.length-1;si>=0;si--){
+    const clubs={};MS[si].forEach(m=>{[[m.h,m.hm],[m.a,m.am]].forEach(([t,id])=>{(clubs[t]||(clubs[t]=new Set())).add(id);});});
+    let used=0,chg=0,care=0;const names=[];
+    Object.entries(clubs).forEach(([t,set])=>{const ids=[...set];const perm=ids.filter(i=>!MG[i].care);used+=perm.length;care+=ids.length-perm.length;if(perm.length>1||ids.length>perm.length&&perm.length>=1&&ids.length>1){const c=Math.max(0,ids.length-1);if(perm.length>1||(ids.length>1)){chg+=perm.length>1?perm.length-1:0;if(perm.length>1)names.push(T[+t]);}}});
+    h+=`<tr><td class="l">${S[si]}${si===CUR?' (so far)':''}</td><td>${used}</td><td><b>${chg}</b></td><td>${care}</td><td class="l" style="white-space:normal">${names.join(', ')||'<span class="zero">none</span>'}</td></tr>`;}
+  $('chgTable').innerHTML=h+'</tbody>';
+}
+function bounce(){
+  const cases=[];
+  S.forEach((_,si)=>{const byClub={};MS[si].forEach(m=>{(byClub[m.h]||(byClub[m.h]=[])).push({d:m.d,gf:m.hg,ga:m.ag,id:m.hm});(byClub[m.a]||(byClub[m.a]=[])).push({d:m.d,gf:m.ag,ga:m.hg,id:m.am});});
+    Object.entries(byClub).forEach(([t,g])=>{g.sort((a,b)=>a.d<b.d?-1:1);for(let i=1;i<g.length;i++){if(g[i].id!==g[i-1].id&&!MG[g[i].id].care){
+      const bef=g.slice(Math.max(0,i-10),i),aft=g.slice(i,i+10);if(bef.length<5||aft.length<5)continue;
+      const pp=a=>a.reduce((x,y)=>x+(y.gf>y.ga?3:y.gf===y.ga?1:0),0)/a.length;
+      cases.push({si,t:+t,mgr:MG[g[i].id].name,prev:MG[g[i-1].id].name,care:MG[g[i-1].id].care,before:pp(bef),after:pp(aft),nb:bef.length,na:aft.length,game:i+1});}}});});
+  const avg=a=>a.reduce((x,y)=>x+y,0)/a.length,better=cases.filter(c=>c.after>c.before).length;
+  $('bounceHint').textContent=`${cases.length} mid-season appointments of a permanent manager, comparing the 10 league games before and after (at least 5 each side). Managers usually arrive after bad runs, so some improvement is expected anyway: bad runs tend to end whoever is in charge.`;
+  $('bounceTiles').innerHTML=[['Points per game before',avg(cases.map(c=>c.before)).toFixed(2),'Average over all cases'],['Points per game after',avg(cases.map(c=>c.after)).toFixed(2),'Average over all cases'],['Improved',Math.round(better/cases.length*100)+'%',`${better} of ${cases.length} cases`]].map(t=>`<div class="tile"><span class="k">${t[0]}</span><span class="v">${t[1]}</span><span class="s">${t[2]}</span></div>`).join('');
+  const rows=[...cases].sort((a,b)=>(b.after-b.before)-(a.after-a.before));
+  const top=rows.slice(0,8),bot=rows.slice(-8).reverse();
+  let h='<thead><tr><th class="l">Season</th><th class="l">Club</th><th class="l">Arrived</th><th class="l">Replaced</th><th>Pts/g before</th><th>Pts/g after</th><th>Change</th></tr></thead><tbody><tr><td class="l" colspan="7"><b>Biggest bounces</b></td></tr>';
+  const row=c=>`<tr class="row" data-t="${c.t}"><td class="l">${S[c.si]}</td><td class="l">${T[c.t]}</td><td class="l">${c.mgr}</td><td class="l">${c.prev}${c.care?' (caretaker)':''}</td><td>${c.before.toFixed(2)}</td><td>${c.after.toFixed(2)}</td><td><b>${sgn(+(c.after-c.before).toFixed(2))}</b></td></tr>`;
+  h+=top.map(row).join('')+'<tr><td class="l" colspan="7"><b>Biggest drops</b></td></tr>'+bot.map(row).join('');
+  $('bounceTable').innerHTML=h+'</tbody>';
+  $('bounceTable').querySelectorAll('tr.row').forEach(tr=>tr.addEventListener('click',()=>pick(+tr.dataset.t)));
+}
+
+/* ---------- draw ---------- */
+function draw(){
+  const v=current();
+  if(v==='odds')drawOdds();
+  if(v==='team')drawTeam();
+  if(v==='seasons')drawSeasons();
+  if(v==='money')drawMoney();
+  if(v==='mgrs')drawMgrs();
+  if(v==='matches')drawMatches();
+}
+let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(draw,120);});
+window.addEventListener('orientationchange',()=>setTimeout(draw,200));
+$('seasonSel').addEventListener('change',drawSeasons);
+$('seasonSel').innerHTML=S.map((s,i)=>`<option value="${i}">${s}</option>`).reverse().join('');$('seasonSel').value=CUR;
+fillTeams();fillMSeason();
+const last=M.filter(m=>m.s===CUR).reduce((a,m)=>m.d>a?m.d:a,'0');
+$('asof').textContent=`2026-27 results through ${dt(last)}, ${MS[CUR].length} games played`;
+$('foot').textContent='Odds are historical frequencies: for each club, the share of clubs in the 19 completed seasons from 2007-08 to 2025-26 with a similar number of points after the same number of games that went on to finish in that place. They ignore fixtures, goal difference and squad quality, so early in the season they are wide. Four Champions League places are assumed throughout. Managers: Wikipedia list of Premier League managers, matched to games by date. Transfers: Transfermarkt figures via github.com/ewenme/transfers (euros, 2007-08 to 2022-23, disclosed fees only) and a Football365 net-spend table (pounds, 2023-24 onward, clubs now in the league). Results to 31 Oct 2026; two Saturday evening games may be missing. Cards: 2010-11 to 2025-26 only, plus Chelsea games this season.';
+$('mSeason').value=CUR;
+{const h=(location.hash||'').slice(1);syncSlider();show(VIEWS.includes(h)?h:'odds');}
+})();
+</script>
+</body>
+</html>
