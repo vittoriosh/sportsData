@@ -1,0 +1,181 @@
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div><h1>Premier League Explorer</h1><span class="sub" id="asof"></span></div>
+      <label class="f" for="teamSel">Club<select id="teamSel"></select></label>
+    </div>
+    <nav role="tablist" aria-label="Views" id="tabs">
+      <button role="tab" data-v="odds" aria-selected="true">Odds</button>
+      <button role="tab" data-v="team" aria-selected="false">Club</button>
+      <button role="tab" data-v="seasons" aria-selected="false">Seasons</button>
+      <button role="tab" data-v="money" aria-selected="false">Money</button>
+      <button role="tab" data-v="mgrs" aria-selected="false">Managers</button>
+      <button role="tab" data-v="matches" aria-selected="false">Matches</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+
+<section class="view on" id="v-odds">
+  <div class="card">
+    <div class="controls" style="margin-top:0">
+      <label class="f" for="oSeason">Season<select id="oSeason"></select></label>
+      <label class="f" for="oN" style="min-width:220px">After game <span id="oNval" style="color:var(--ink)"></span><input type="range" id="oN" min="1" max="38" value="9" style="width:100%"></label>
+      <button class="btn ghost" id="oLatest">Latest</button>
+      <button class="btn ghost" id="oPrev" aria-label="One game earlier">&minus;</button>
+      <button class="btn ghost" id="oNext" aria-label="One game later">+</button>
+    </div>
+    <p class="hint" id="oHint"></p>
+  </div>
+  <div class="tiles" id="oTiles"></div>
+  <div class="card">
+    <h2 id="oTitle">Odds for every club</h2>
+    <p class="hint">Each club is matched with every club in the previous seasons that had a similar number of points after the same number of games, and we count how those clubs finished. Click a club to follow it.</p>
+    <div class="tablewrap"><table id="oTable"></table></div>
+  </div>
+  <div class="cols two">
+    <div class="card" id="cardTraj">
+      <div class="cardhead"><div><h2 id="trajTitle">How the odds have moved</h2><p class="hint">The club's odds after each game this season, using its points at that moment. Hover to read values.</p></div>
+        <div class="chips"><button class="btn expandbtn" data-card="cardTraj">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+      <div class="legendline"><span><i style="background:var(--cur)"></i>Top four</span><span><i style="background:#d29a00"></i>Title</span><span><i style="background:var(--bad)"></i>Bottom three</span></div>
+      <div class="chartbox"><svg id="trajSvg" role="img" aria-label="Odds after each game"></svg><div class="tip" id="tipA"></div></div>
+    </div>
+    <div class="card" id="cardCurve">
+      <div class="cardhead"><div><h2 id="curveTitle">Points to odds</h2><p class="hint">After the chosen number of games: how the odds change with points. The vertical line is the picked club.</p></div>
+        <div class="chips"><button class="btn expandbtn" data-card="cardCurve">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+      <div class="legendline"><span><i style="background:var(--cur)"></i>Top four</span><span><i style="background:#d29a00"></i>Title</span><span><i style="background:var(--bad)"></i>Bottom three</span></div>
+      <div class="chartbox"><svg id="curveSvg" role="img" aria-label="Odds by points after the chosen game"></svg><div class="tip" id="tipB"></div></div>
+    </div>
+  </div>
+  <div class="card" id="cardThr">
+    <div class="cardhead"><div><h2>Points needed as the season goes on</h2><p class="hint">Points after each game at which a club has a 50% or 80% historical chance of the top four, a 50% chance of the title, and a 10% or lower chance of relegation. The black line is the picked club.</p></div>
+      <div class="chips"><button class="btn expandbtn" data-card="cardThr">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+    <div class="legendline"><span><i style="background:var(--cur)"></i>Top four 80%</span><span><i style="background:#6a9be0"></i>Top four 50%</span><span><i style="background:#d29a00"></i>Title 50%</span><span><i style="background:var(--bad)"></i>Safe (relegation 10% or less)</span><span><i style="background:#111"></i>Picked club</span></div>
+    <div class="chartbox"><svg id="thrSvg" role="img" aria-label="Points needed by game number"></svg><div class="tip" id="tipC"></div></div>
+  </div>
+  <div class="card">
+    <h2 id="simTitle">Closest matches from history</h2>
+    <p class="hint" id="simHint"></p>
+    <div class="tablewrap"><table id="simTable"></table></div>
+  </div>
+</section>
+
+<section class="view" id="v-team">
+  <div class="tiles" id="tTiles"></div>
+  <div class="card" id="cardTrj">
+    <div class="cardhead"><div><h2 id="trjTitle">Spending and results, last 10 seasons</h2><p class="hint" id="trjSum"></p></div>
+      <div class="chips"><button class="btn expandbtn" data-card="cardTrj">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+    <div class="legendline"><span><i style="background:var(--cur)"></i>Net spent that season</span><span><i style="background:#b9b9b9"></i>Net income from sales</span><span><i style="background:#111"></i>3-season net spend (dashed)</span><span><i style="background:var(--cur);border-radius:50%"></i>League points</span><span><i style="background:#e8a400"></i>Points of 4th place</span></div>
+    <div class="chartbox"><svg id="trjSvg" role="img" aria-label="Transfer spending and league points by season"></svg><div class="tip" id="tipT"></div></div>
+  </div>
+  <div class="card"><h2 id="cmTitle">Managers</h2><p class="hint">Every manager with league games at this club since 2007-08. Caretakers are marked.</p><div class="tablewrap"><table id="cmTable"></table></div></div>
+  <div class="card" id="cardProg">
+    <div class="cardhead"><div><h2>Points by game, season by season</h2><p class="hint">Hover or drag across the chart to compare seasons at the same game number.</p></div>
+      <div class="chips"><button class="btn expandbtn" data-card="cardProg">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+    <div class="controls">
+      <label class="f" for="metric">Measure<select id="metric"><option value="pts">Points</option><option value="gf">Goals scored</option><option value="ga">Goals conceded</option><option value="gd">Goal difference</option><option value="y">Yellow cards</option><option value="r">Red cards</option></select></label>
+      <div class="chips">
+        <button class="btn ghost" id="selAll">All</button><button class="btn ghost" id="selLast10">Last 10</button><button class="btn ghost" id="selLast5">Last 5</button><button class="btn ghost" id="selNone">None</button><button class="btn ghost" id="avgBtn" aria-pressed="true">Average</button>
+      </div>
+    </div>
+    <div class="chips scroll" id="seasonChips" role="group" aria-label="Seasons shown" style="margin-top:6px"></div>
+    <div class="chartbox" id="lineBox"><svg id="lineSvg" role="img" aria-label="Cumulative measure by games played"></svg><div class="tip" id="tip"></div></div>
+    <p class="hint" id="lineNote"></p>
+  </div>
+  <div class="card">
+    <h2>Every season</h2>
+    <div class="tablewrap"><table id="histTable"></table></div>
+  </div>
+</section>
+
+<section class="view" id="v-seasons">
+  <div class="card">
+    <div class="controls" style="margin-top:0">
+      <label class="f" for="seasonSel">Season<select id="seasonSel"></select></label>
+    </div>
+    <div class="tablewrap"><table id="seasonTable"></table></div>
+    <p class="hint" id="seasonNote"></p>
+  </div>
+  <div class="card" id="cardNeed">
+    <div class="cardhead"><div><h2>Points it took, season by season</h2><p class="hint">Points of the champions, of 4th place (the last Champions League spot in this period) and of 17th place (the highest total to go down is 18th, so 17th is safe).</p></div>
+      <div class="chips"><button class="btn expandbtn" data-card="cardNeed">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+    <div class="legendline"><span><i style="background:#d29a00"></i>Champions</span><span><i style="background:var(--cur)"></i>4th place</span><span><i style="background:var(--bad)"></i>17th place</span></div>
+    <div class="chartbox"><svg id="needSvg" role="img" aria-label="Points of 1st, 4th and 17th place by season"></svg></div>
+  </div>
+</section>
+
+<section class="view" id="v-money">
+  <div class="card">
+    <h2>Did the money help?</h2>
+    <p class="hint">Pick how many seasons of spending to add up and the season they end in. We compare each club's points the season before the spending started with its points in the final season, and see whether the biggest spenders improved more than everyone else.</p>
+    <div class="controls">
+      <label class="f" for="moYears">Years of spending<select id="moYears"><option value="1">1 season</option><option value="2">2 seasons</option><option value="3" selected>3 seasons</option><option value="4">4 seasons</option><option value="5">5 seasons</option></select></label>
+      <label class="f" for="moEnd">Ending in<select id="moEnd"></select></label>
+    </div>
+    <p class="hint" id="moNote"></p>
+  </div>
+  <div class="card" id="moHeadCard"><h2 id="moHeadTitle"></h2><p id="moHead" style="margin:6px 0 0;max-width:80ch"></p></div>
+  <div class="tiles" id="moTiles"></div>
+  <div class="card">
+    <h2 id="moTitle">Club by club</h2>
+    <p class="hint">Blue bars show net spending (money paid minus money received), green or red bars show the change in league points. Verdicts: <b>Helped</b> means an above-median spender gained 8 or more points. <b>Did not help</b> means an above-median spender lost 8 or more. Clubs that spent less are labelled by what happened to them. Everything in between is <b>little change</b>.</p>
+    <div class="tablewrap"><table id="moTable"></table></div>
+  </div>
+  <div class="card" id="cardDb">
+    <div class="cardhead"><div><h2 id="dbTitle">Spending rank against finishing rank</h2><p class="hint">One row per club, biggest spender at the top. The grey dot is where the club ranks for net spending that season, the blue dot is where it finished. A green line means it finished higher than its spending suggests, red means lower.</p></div>
+      <div class="chips"><button class="btn expandbtn" data-card="cardDb">Expand</button><span class="fullbar"><button class="btn" data-act="rotate" aria-pressed="false">Rotate</button><button class="btn" data-act="close">Close</button></span></div></div>
+    <div class="chartbox"><svg id="dbSvg" role="img" aria-label="Spending rank against finishing rank for each club"></svg></div>
+  </div>
+  <div class="card">
+    <h2>Do big spenders finish higher?</h2>
+    <div class="controls" style="margin-top:6px"><label class="f" for="bandBy">Group clubs by<select id="bandBy"><option value="gross">Money paid for players (gross spending)</option><option value="net">Net spending (paid minus received)</option></select></label></div>
+    <p class="hint">Every season from 2007-08 to 2022-23, clubs are grouped by spending that season (64 club-seasons per group), then we look at how each group finished. Net spending ranks some big clubs low because they also sell a lot, so gross spending is the better measure of how much a club invests.</p>
+    <div class="tablewrap"><table id="bandTable"></table></div>
+  </div>
+  <div class="cols two">
+    <div class="card"><h2>Spent least, finished highest</h2><p class="hint">The biggest gaps between spending rank and finishing rank, 2007-08 to 2022-23 (rank among all 20 clubs).</p><div class="tablewrap"><table id="bestTable"></table></div></div>
+    <div class="card"><h2>Spent most, finished lowest</h2><p class="hint">The biggest gaps the other way, same seasons.</p><div class="tablewrap"><table id="worstTable"></table></div></div>
+  </div>
+</section>
+
+<section class="view" id="v-mgrs">
+  <div class="tiles" id="mgTiles"></div>
+  <div class="card">
+    <div class="cardhead"><div><h2>Manager records</h2><p class="hint">League games only, 2007-08 onwards, all clubs. Points per game is the fairest comparison; remember clubs differ hugely in resources. Click a manager for their spells.</p></div></div>
+    <div class="controls">
+      <label class="f" for="mgMin" style="min-width:200px">Minimum games <span id="mgMinV" style="color:var(--ink)"></span><input type="range" id="mgMin" min="1" max="380" value="76" style="width:100%"></label>
+      <button class="btn ghost" id="mgCare" aria-pressed="false">Include caretakers</button>
+      <label class="f" for="mgSearch">Search<input type="search" id="mgSearch" placeholder="Name or club"></label>
+    </div>
+    <div class="tablewrap" style="max-height:620px"><table id="mgTable"></table></div>
+  </div>
+  <div class="card">
+    <h2>Managers used each season</h2>
+    <p class="hint">Permanent managers who took charge of at least one league game, counting caretakers separately. In-season changes are managers who started a game in the middle of the season.</p>
+    <div class="tablewrap"><table id="chgTable"></table></div>
+  </div>
+  <div class="card">
+    <h2>The new-manager bounce</h2>
+    <p class="hint" id="bounceHint"></p>
+    <div class="tiles" id="bounceTiles" style="margin-top:10px"></div>
+    <div class="tablewrap"><table id="bounceTable"></table></div>
+  </div>
+</section>
+
+<section class="view" id="v-matches">
+  <div class="card">
+    <div class="controls" style="margin-top:0">
+      <label class="f" for="mTeam">Club<select id="mTeam"></select></label>
+      <label class="f" for="mSeason">Season<select id="mSeason"></select></label>
+      <label class="f" for="mRes">Result<select id="mRes"><option value="">All results</option><option value="W">Wins</option><option value="D">Draws</option><option value="L">Defeats</option></select></label>
+      <label class="f" for="mVenue">Venue<select id="mVenue"><option value="">Home and away</option><option value="H">Home</option><option value="A">Away</option></select></label>
+      <label class="f" for="mOpp">Opponent<input type="search" id="mOpp" placeholder="Type a club"></label>
+    </div>
+    <div class="summary" id="mSummary"></div>
+    <div class="tablewrap" style="max-height:640px"><table id="matchTable"></table></div>
+    <p class="hint">Result, venue and opponent filters need a club picked. A dash means card data is not available for that game.</p>
+  </div>
+</section>
+
+<footer id="foot"></footer>
+</main>
